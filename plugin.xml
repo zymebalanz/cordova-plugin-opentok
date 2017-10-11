@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.tokbox.cordova.opentok"
-    version="1.0.3">
+    version="1.0.4">
 
     <name>OpenTokCordovaPlugin</name>
     <description>Add live video streaming to your Cordova Application</description>
@@ -10,11 +10,10 @@
     <keywords>opentok,tokbox</keywords>
 
     <platform name="android">
+      <framework src="build-extras.gradle" custom="true" type="gradleReference" />
       <asset src="www/opentok.js" target="opentok.js" />
-
-      <source-file src="src/android/com/tokbox/cordova/OpenTokAndroidPlugin.java"
-        target-dir="src/com/tokbox/cordova/" />
-
+  	  <source-file src="src/android/com/tokbox/cordova/OpenTokAndroidPlugin.java" target-dir="src/com/tokbox/cordova/" />
+      
       <config-file target="AndroidManifest.xml" parent="/manifest">
         <uses-permission android:name="android.permission.CAMERA" />
         <uses-permission android:name="android.permission.INTERNET" />
@@ -26,15 +25,14 @@
       </config-file>
 
       <!-- copy opentok sdk -->
-      <source-file src="src/android/libs/opentok-android-sdk-2.5.0.jar" target-dir="libs/" />
-      <source-file src="src/android/libs/armeabi/libopentok.so" target-dir="libs/armeabi" />
-      <source-file src="src/android/libs/x86/libopentok.so" target-dir="libs/x86" />
 
+      <source-file src="src/android/libs/opentok-android-sdk-2.12.0.aar" target-dir="libs/" />
+      <resource-file src="src/android/libs/opentok-android-sdk-2.12.0.aar" target="libs/opentok-android-sdk-2.12.0.aar" />
       <config-file target="config.xml" parent="/*">
         <feature name="OpenTokPlugin">
           <param name="android-package" value="com.tokbox.cordova.OpenTokAndroidPlugin"/>
         </feature>
-      </config-file>
+      </config-file>  
       
     </platform>
 

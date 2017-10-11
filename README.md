@@ -1,9 +1,6 @@
-Cordova Plugin for OpenTok iOS
+Cordova Plugin for OpenTok iOS and Android
 ===
-
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/songz/cordova-plugin-opentok?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-Weave video chat into your web (and now mobile!) application.
+##### Disclaimer: This plugin is based on [Cordova OpenTok Plugin](https://github.com/songz/cordova-plugin-opentok/) which has not been actively maintained. Please keep in mind that this is not officially supported by TokBox.
 
 ## Using Cordova CLI
 Make sure You have Cordova 3.5.0 or greater installed. If you haven't, view [Cordova instructions](http://cordova.apache.org/docs/en/3.5.0/guide_cli_index.md.html) Page.  
@@ -16,15 +13,13 @@ Clone this repo to get the source code for OpenTok's Cordova plugin
 
 2. Install OpenTok plugin into your app:
 `cd my-app`  
-`cordova plugin add https://github.com/songz/cordova-plugin-opentok/`  
+`cordova plugin add https://github.com/msach22/cordova-plugin-opentok/`  
 > Plugin already exists? To remove OpenTokPlugin: `cordova plugin remove com.tokbox.cordova.opentok`
 
-3a. For **Android Apps**, add Android platform into your cordova app
-`cordova platform add android`
-
-3b. For **iOS Apps**, add iOS platform into your cordova app  
+3a. For **iOS Apps**, add iOS platform into your cordova app  
 `cordova platform add ios`  
-  iOS deloyment, as of March 14, needs additional setup. See [FAQ/Troubleshoot](https://github.com/songz/cordova-plugin-opentok#faq-troubleshoot-guide).
+3b. For **Android Apps**, add Android platform into your cordova app  
+`cordova platform add android`
 
 4. Edit your code in the created `www` folder
 
@@ -46,14 +41,9 @@ To use the opentok library, make sure you include **opentok.js** file in your HT
 
 All JavaScript code should be written in `deviceready` function in */js/index.js* because it is executed after all dependencies has loaded.
 
-    deviceready: function() {
+    onDeviceReady: function() {
         // Do Your Stuff Here!
     },
-
-To view and interact with elements on the browser console, use [weinre](http://people.apache.org/~pmuellr/weinre/docs/latest/). Here's a few things to take note of if you are using weinre on a local network:
-* make sure all devices are connected to the same network
-* make sure you bind weinre to 0.0.0.0 so your mobile devices: `weinre --boundHost 0.0.0.0`
-* when you include the js library from weinre, make sure to use your computer's ip address and not localhost!
 
 ---
 
@@ -65,6 +55,16 @@ All of the code resides in `example/www/index.html` and `example/www/js/index.js
 Have Fun!
 
 ----
+
+## iOS Camera & Microphone Permissions
+Add the following to the iOS project's `info.plist` file:
+```
+<key>NSCameraUsageDescription</key>
+<string>The camera is required to publish video</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>The microphone is required to publish audio</string>
+```
+Make sure to update the description of each permission request to what best fits your needs.
 
 ## Contribute
 1. Run `npm install` to install the necessary grunt files  
@@ -81,32 +81,10 @@ Have Fun!
 ----
 
 ## Updates:
-### April 15 - 
-* fix [issue 22](https://github.com/songz/cordova-plugin-opentok/issues/22) for sessionConnected callback  
-* fix [issue 6](https://github.com/songz/cordova-plugin-opentok/issues/6) add connectionCreated and Destroyed events  
-* Reorganized event passing between JS and native SDKs  
-### April 10 - 
-* Upgraded to v2.2 for Android SDK and iOS SDK. Solves orientation and performance issues.
-### March 14 -
-* Removed jquery dependency on sample code  
-* Renamed namespace to `com.tokbox.cordova.opentok`  
-  * If you have the previous version, please remove it: `cordova plugin remove com.tokbox.opentok.cordova.OpenTokPlugin` 
+### October 10, 2017
 
-----
-
-## FAQ TROUBLESHOOT GUIDE:
-* Xcode 5.1 and Cordova iOS not working
-  * [Solution at Cordova](http://shazronatadobe.wordpress.com/2014/03/12/xcode-5-1-and-cordova-ios/)
-* Building ios project gives **Apple Mach-O Linker Errors** that looks like this: ![Building ios project, linker errors](https://f.cloud.github.com/assets/5085574/2421687/5c826df2-ab85-11e3-9a6a-7e8994b37b62.png)
-  * Solution: 
-    * Go to project build settings and change 'Build Active Architecture Only' to NO. 
-    * Do the same for cordovaLib build settings: change 'Build Active Architecture Only' to NO. 
-    * In the project build settings, remove armv7s and arm64 from Valid Architectures   ![change build active architecture in project settings](https://cloud.githubusercontent.com/assets/686933/2671191/a30032de-c0d7-11e3-9b27-bd2ccfa7459c.png)
-* The provided sample code works, but how do I use my own credentials?
-  * Replace data.apiKey, data.sid, data.token with your own apiKey, sessionId, token, respectively.
-* How do I generate a sessionId or a Token? 
-  * You can generate sessionId and its corresponding tokens manually from your [dashboard](https://dashboard.tokbox.com/)  
-  * [Tutorials on how to generate sessionId and Token programmatically](http://www.tokbox.com/blog/getting-started-demo-apps/)3
+Added support for OpenTok iOS 2.12.0
+Added support for OpenTok Android 2.12.0
 
 License
 ===
