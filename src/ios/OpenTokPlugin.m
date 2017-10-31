@@ -86,7 +86,7 @@
     _publisher = [[OTPublisher alloc] initWithDelegate:self name:name];
     [_publisher setPublishAudio:bpubAudio];
     [_publisher setPublishVideo:bpubVideo];
-    [self.webView.superview addSubview:_publisher.view];
+    [self.webView.scrollView addSubview:_publisher.view];
     [_publisher.view setFrame:CGRectMake(left, top, width, height)];
     if (zIndex>0) {
         _publisher.view.layer.zPosition = zIndex;
@@ -236,7 +236,7 @@
     if (zIndex>0) {
         sub.view.layer.zPosition = zIndex;
     }
-    [self.webView.superview addSubview:sub.view];
+    [self.webView.scrollView addSubview:sub.view];
     
     // Return to JS event handler
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -497,4 +497,3 @@
 
 
 @end
-

@@ -35,6 +35,8 @@ class TBSubscriber
 
   constructor: (stream, divName, properties) ->
     element = document.getElementById(divName)
+    @id = divName
+    @element = element
     pdebug "creating subscriber", properties
     @streamId = stream.streamId
     if(properties? && properties.width=="100%" && properties.height == "100%")
@@ -67,6 +69,3 @@ class TBSubscriber
   # deprecating
   removeEventListener: (event, listener) ->
     return @
-
-
-
