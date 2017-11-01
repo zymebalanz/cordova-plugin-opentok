@@ -182,10 +182,10 @@ getPosition = function(divName) {
   marginLeft = parseInt(computedStyle.marginLeft) || 0;
   marginRight = parseInt(computedStyle.marginRight) || 0;
   return {
-    top:(curtop + marginTop) * window.devicePixelRatio,
-    left:(curleft + marginLeft) * window.devicePixelRatio,
-    width:(width - (marginLeft + marginRight)) * window.devicePixelRatio,
-    height:(height - (marginTop + marginBottom)) * window.devicePixelRatio
+    top: curtop + marginTop,
+    left: curleft + marginLeft,
+    width: width - (marginLeft + marginRight),
+    height: height - (marginTop + marginBottom)
   };
 };
 
