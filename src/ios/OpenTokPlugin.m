@@ -5,7 +5,7 @@
 //  Please see the LICENSE included with this distribution for details.
 //
 
-#import "OpentokPlugin.h"
+#import "OpenTokPlugin.h"
 
 @implementation OpenTokPlugin{
     OTSession* _session;
