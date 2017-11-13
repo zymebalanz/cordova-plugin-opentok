@@ -601,7 +601,7 @@ TBSession = (function() {
     element = streamElements[elementId];
     if (element) {
       element.parentNode.removeChild(element);
-      delete streamElements[streamId];
+      delete streamElements[elementId];
       TBUpdateObjects();
     }
     return Cordova.exec(TBSuccess, TBError, OTPlugin, "unsubscribe", [subscriber.streamId]);
@@ -848,8 +848,6 @@ TBSubscriber = (function() {
   function TBSubscriber(stream, divName, properties) {
     var divPosition, element, height, name, obj, position, ratios, subscribeToAudio, subscribeToVideo, width, zIndex, _ref;
     element = document.getElementById(divName);
-    this.id = divName;
-    this.element = element;
     pdebug("creating subscriber", properties);
     this.streamId = stream.streamId;
     if ((properties != null) && properties.width === "100%" && properties.height === "100%") {
