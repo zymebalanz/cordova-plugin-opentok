@@ -619,6 +619,7 @@ TBSession = (function() {
     this.connectionDestroyed = __bind(this.connectionDestroyed, this);
     this.connectionCreated = __bind(this.connectionCreated, this);
     this.eventReceived = __bind(this.eventReceived, this);
+    this.resetElement = __bind(this.resetElement, this);
     this.publish = __bind(this.publish, this);
     this.publish = __bind(this.publish, this);
     this.apiKey = this.apiKey.toString();
@@ -641,6 +642,24 @@ TBSession = (function() {
       _results.push(objects = document.getElementsByClassName('OT_root'));
     }
     return _results;
+  };
+
+  TBSession.prototype.resetElement = function(element) {
+    var attribute, attributes, childClass, childElement, elementChildren, _i, _j, _len, _len1;
+    attributes = ['style', 'data-streamid', 'class'];
+    elementChildren = element.childNodes;
+    for (_i = 0, _len = attributes.length; _i < _len; _i++) {
+      attribute = attributes[_i];
+      element.removeAttribute(attribute);
+    }
+    for (_j = 0, _len1 = elementChildren.length; _j < _len1; _j++) {
+      childElement = elementChildren[_j];
+      childClass = childElement.getAttribute('class');
+      if (childClass === 'OT_video-container') {
+        element.removeChild(childElement);
+        break;
+      }
+    }
   };
 
   TBSession.prototype.eventReceived = function(response) {
@@ -717,7 +736,7 @@ TBSession = (function() {
     if (stream) {
       element = streamElements[stream.streamId];
       if (element) {
-        element.parentNode.removeChild(element);
+        this.resetElement(element);
         delete streamElements[stream.streamId];
         TBUpdateObjects();
       }

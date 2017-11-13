@@ -139,7 +139,17 @@ class TBSession
       if e and e.parentNode and e.parentNode.removeChild
         e.parentNode.removeChild(e)
       objects = document.getElementsByClassName('OT_root')
-
+  resetElement: (element) =>
+    attributes = ['style', 'data-streamid', 'class']
+    elementChildren = element.childNodes
+    element.removeAttribute attribute for attribute in attributes
+    for childElement in elementChildren
+      childClass = childElement.getAttribute 'class'
+      if childClass == 'OT_video-container'
+        element.removeChild childElement
+        break
+    return
+    
   # event listeners
   # todo - other events: connectionCreated, connectionDestroyed, signal?, streamPropertyChanged, signal:type?
   eventReceived: (response) =>
@@ -188,7 +198,7 @@ class TBSession
     if(stream)
       element = streamElements[ stream.streamId ]
       if(element)
-        element.parentNode.removeChild(element)
+        @resetElement(element)
         delete( streamElements[ stream.streamId ] )
         TBUpdateObjects()
       delete( @streams[ stream.streamId ] )
