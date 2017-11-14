@@ -8,13 +8,13 @@ To see the plugin in action, please check out [opentok-cordova-samples.](https:/
 ## Using Cordova CLI
 Make sure You have Cordova 3.5.0 or greater installed. If you haven't, take a look at the [Cordova instructions](http://cordova.apache.org/docs/en/3.5.0/guide_cli_index.md.html) Page.
 
-Clone this repo to get the source code for the OpenTok Cordova plugin
+1. Clone this repo to get the source code for the OpenTok Cordova plugin
 
-To install the OpenTok Cordova plugin, run the following command in the root of your project:
+2. To install the OpenTok Cordova plugin, run the following command in the root of your project:
 ```
 cordova plugin add https://github.com/msach22/cordova-plugin-opentok/
 ```  
-You can remove the existing OpenTok Cordova plugin by running the following command: 
+3. You can remove the existing OpenTok Cordova plugin by running the following command: 
 ``` 
 cordova plugin remove com.tokbox.cordova.opentok
 ```
