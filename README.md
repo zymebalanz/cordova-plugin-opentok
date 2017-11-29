@@ -4,7 +4,7 @@
 ##### Disclaimer: This plugin is based on the [Cordova OpenTok Plugin](https://github.com/songz/cordova-plugin-opentok/). Please keep in mind that this is an OpenTok Labs project which means that it's not officially supported by TokBox.
 
 ## Sample code 
-To see the plugin in action, please check out [opentok-cordova-samples.](https://github.com/msach22/opentok-cordova-samples)
+To see the plugin in action, please check out [opentok-cordova-samples.](https://github.com/opentok/opentok-cordova-samples)
 
 ## Using Cordova CLI
 Make sure You have Cordova 3.5.0 or greater installed. If you haven't, take a look at the [Cordova instructions](http://cordova.apache.org/docs/en/3.5.0/guide_cli_index.md.html) Page.
@@ -13,7 +13,7 @@ Make sure You have Cordova 3.5.0 or greater installed. If you haven't, take a lo
 
 2. To install the OpenTok Cordova plugin, run the following command in the root of your project:
 ```
-cordova plugin add https://github.com/msach22/cordova-plugin-opentok/
+cordova plugin add https://github.com/opentok/cordova-plugin-opentok/
 ```  
 3. You can remove the existing OpenTok Cordova plugin by running the following command: 
 ``` 
