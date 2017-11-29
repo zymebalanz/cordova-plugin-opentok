@@ -51,6 +51,7 @@ You can only create one publisher object. Calling `OT.initPublisher()` more than
     * **16,000 - 20,000 for wideband (WB) speech**
     * **28,000 - 40,000 for full-band (FB) speech**
     * **48,000 - 64,000 for full-band (FB) music**
+    * **64,000 - 128,000 for full-band (FB) stereo music**
     
     * **The default value is 40,000.**
 
