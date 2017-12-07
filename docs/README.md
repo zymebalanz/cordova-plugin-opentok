@@ -49,7 +49,7 @@ To use the OpenTok Cordova Plugin, include the OpenTok JavaScript file in your H
 	</tr>
 	<tr>
 		<td>
-      <a href="/docs/tb.md">TB</a>
+      <a href="/docs/ot.md">OT</a>
     </td>
     <td>Lets you initialize the OpenTok API and set up exception event handling</td>
 	</tr>
@@ -92,9 +92,9 @@ To use the OpenTok Cordova Plugin, include the OpenTok JavaScript file in your H
 </table>
 
 
-## Gotcha!
+## Important Notes!
 
-Since the video View is a native UIView on top of the phoneGap's web view, moving the 'object' DOM will have no effect on the video. To update Video position, call this function:
+Since the video View is a native UIView on top of the Cordova's web view, moving the 'object' DOM will have no effect on the video. To update Video position, call this function:
 
 ```
 OT.updateViews()
