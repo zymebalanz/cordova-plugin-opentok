@@ -158,7 +158,7 @@ TBEvent = (function() {
 
 })();
 
-var TBError, TBGenerateDomHelper, TBGetScreenRatios, TBGetZIndex, TBSuccess, TBUpdateObjects, getPosition, pdebug, replaceWithVideoStream, streamElements;
+var OTPublisherError, OTReplacePublisher, TBError, TBGenerateDomHelper, TBGetScreenRatios, TBGetZIndex, TBSuccess, TBUpdateObjects, getPosition, pdebug, replaceWithVideoStream, streamElements;
 
 streamElements = {};
 
@@ -215,11 +215,20 @@ replaceWithVideoStream = function(divName, streamId, properties) {
 };
 
 TBError = function(error) {
-  return navigator.notification.alert(error);
+  return console.log("Error: ", error);
 };
 
 TBSuccess = function() {
   return console.log("success");
+};
+
+OTPublisherError = function(error) {
+  if (error === "permission denied") {
+    OTReplacePublisher();
+    return TBError("Camera or Audio Permission Denied");
+  } else {
+    return TBError(error);
+  }
 };
 
 TBUpdateObjects = function() {
@@ -265,6 +274,33 @@ TBGetScreenRatios = function() {
     widthRatio: window.outerWidth / window.innerWidth,
     heightRatio: window.outerHeight / window.innerHeight
   };
+};
+
+OTReplacePublisher = function() {
+  var attribute, attributes, childClass, childElement, el, elAttribute, element, elementChildren, elements, _i, _j, _k, _len, _len1, _len2;
+  elements = document.getElementsByClassName('OT_root OT_publisher');
+  for (_i = 0, _len = elements.length; _i < _len; _i++) {
+    el = elements[_i];
+    elAttribute = el.getAttribute('data-streamid');
+    if (elAttribute === "TBPublisher") {
+      element = el;
+      break;
+    }
+  }
+  attributes = ['style', 'data-streamid', 'class'];
+  elementChildren = element.childNodes;
+  for (_j = 0, _len1 = attributes.length; _j < _len1; _j++) {
+    attribute = attributes[_j];
+    element.removeAttribute(attribute);
+  }
+  for (_k = 0, _len2 = elementChildren.length; _k < _len2; _k++) {
+    childElement = elementChildren[_k];
+    childClass = childElement.getAttribute('class');
+    if (childClass === 'OT_video-container') {
+      element.removeChild(childElement);
+      break;
+    }
+  }
 };
 
 pdebug = function(msg, data) {
@@ -522,7 +558,7 @@ TBSession = (function() {
       this.publisher = OT.initPublisher(arguments);
     }
     this.publisher.setSession(this);
-    Cordova.exec(TBSuccess, TBError, OTPlugin, "publish", []);
+    Cordova.exec(TBSuccess, OTPublisherError, OTPlugin, "publish", []);
     return this.publisher;
   };
 

@@ -58,10 +58,17 @@ replaceWithVideoStream = (divName, streamId, properties) ->
   return element
 
 TBError = (error) ->
-  navigator.notification.alert(error)
+  console.log("Error: ", error)
 
 TBSuccess = ->
   console.log("success")
+
+OTPublisherError = (error) ->
+  if error == "permission denied"
+    OTReplacePublisher()
+    TBError("Camera or Audio Permission Denied")
+  else
+    TBError(error)
 
 TBUpdateObjects = ()->
   console.log("JS: Objects being updated in TBUpdateObjects")
@@ -99,6 +106,24 @@ TBGetScreenRatios = ()->
         widthRatio: window.outerWidth / window.innerWidth,
         heightRatio: window.outerHeight / window.innerHeight
     }
+
+OTReplacePublisher = ()->
+    # replace publisher because permission denied
+    elements = document.getElementsByClassName('OT_root OT_publisher');
+    for el in elements
+      elAttribute = el.getAttribute('data-streamid')
+      if elAttribute == "TBPublisher"
+        element = el
+        break
+    attributes = ['style', 'data-streamid', 'class']
+    elementChildren = element.childNodes
+    element.removeAttribute attribute for attribute in attributes
+    for childElement in elementChildren
+      childClass = childElement.getAttribute 'class'
+      if childClass == 'OT_video-container'
+        element.removeChild childElement
+        break
+    return
 
 pdebug = (msg, data) ->
   console.log "JS Lib: #{msg} - ", data
