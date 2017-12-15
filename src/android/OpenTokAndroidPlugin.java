@@ -187,11 +187,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
           publisherName = this.mProperty.getString(0);
           audioBitrate = this.mProperty.getInt(12);
           frameRate = "FPS_" + this.mProperty.getString(15);    
-          videoTrack = this.mProperty.getString(14) == "true";
-          audioTrack = this.mProperty.getString(13) == "true";
-          audioFallbackEnabled = this.mProperty.getString(11) == "true";
-          publishVideo = this.mProperty.getString(7) == "true";
-          publishAudio = this.mProperty.getString(6) == "true";
+          videoTrack = this.mProperty.getString(14).equals("true");
+          audioTrack = this.mProperty.getString(13).equals("true");
+          audioFallbackEnabled = this.mProperty.getString(11).equals("true");
+          publishVideo = this.mProperty.getString(7).equals("true");
+          publishAudio = this.mProperty.getString(6).equals("true");
           if (compareStrings(this.mProperty.getString(16), "1280x720")) {
             resolution = "HIGH";
           }
@@ -219,7 +219,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
         this.mView = mPublisher.getView();
         frame.addView( this.mView );
         mSession.publish(mPublisher);
-        Log.i(TAG, "publishing");        
+        Log.i(TAG, "publishing");
       }
       super.run();
     }
