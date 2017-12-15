@@ -53,7 +53,7 @@ class TBSession
     else
       @publisher = OT.initPublisher(arguments)
     @publisher.setSession(@)
-    Cordova.exec(TBSuccess, TBError, OTPlugin, "publish", [] )
+    Cordova.exec(TBSuccess, OTPublisherError, OTPlugin, "publish", [] )
     return @publisher
   signal: (signal, signalCompletionHandler) ->
     # signal payload: [type, data, connection( separated by spaces )]
