@@ -27,6 +27,12 @@ import android.util.Log;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import com.opentok.android.Connection;
 import com.opentok.android.OpentokError;
@@ -47,6 +53,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     Session.StreamPropertiesListener {
 
     private String sessionId;
+    private String apiKey;
     protected Session mSession;
     public static final String TAG = "OTPlugin";
     public boolean sessionConnected;
@@ -426,12 +433,15 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 return true;
             }
         } else if (action.equals("initSession")) {
+            apiKey = args.getString(0);
+            sessionId = args.getString(1);
             Log.i(TAG, "created new session with data: " + args.toString());
-            mSession = new Session(this.cordova.getActivity().getApplicationContext(), args.getString(0), args.getString(1));
+            mSession = new Session(this.cordova.getActivity().getApplicationContext(), apiKey, sessionId);
             mSession.setSessionListener(this);
             mSession.setConnectionListener(this);
             mSession.setSignalListener(this);
             mSession.setStreamPropertiesListener(this);
+            logOT();
 
             // publisher methods
         } else if (action.equals("setCameraPosition")) {
@@ -703,6 +713,52 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         } catch (JSONException e) {
         }
     }
+    public void logOT() {
+        RequestQueue queue = Volley.newRequestQueue(this.cordova.getActivity().getApplicationContext());
+        String url = "https://hlg.tokbox.com/prod/logging/ClientEvent";
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+            new Response.Listener<String>() 
+            {
+                @Override
+                public void onResponse(String response) {
+                    // response
+                    Log.i(TAG, "Log Response: " + response);
+                }
+            }, 
+            new Response.ErrorListener() 
+            {
+                 @Override
+                 public void onErrorResponse(VolleyError error) {
+                     // error
+                     Log.i(TAG, "Error logging");
+               }
+            }
+        ) {     
+            @Override
+            protected Map<String, String> getParams() 
+            {
+                    JSONObject payload = new JSONObject();
+                    try {
+                        payload.put("platform", "Android");
+                        payload.put("sessionId", sessionId);
+                    } catch (JSONException e) {
+                        Log.i(TAG, "Error creating payload json object");
+                    }
+                    Map<String, String>  params = new HashMap<String, String>();  
+                    params.put("action", "cp_initialize");
+                    params.put("payload_type", "info");
+                    params.put("partner_id", apiKey);
+                    params.put("payload", payload.toString());
+                    params.put("source", "https://github.com/opentok/cordova-plugin-opentok");
+                    params.put("build", "2.12.0");
+
+
+                return params;
+            }
+        };
+        queue.add(postRequest);
+    }
+
 
     public void triggerStreamCreated(Stream arg1, String eventType) {
         JSONObject data = new JSONObject();
