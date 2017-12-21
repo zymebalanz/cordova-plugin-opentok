@@ -60,12 +60,10 @@
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error){
         if (error){
-            NSLog(@"Error : %@. URL : %@",
-                  [error localizedDescription],
-                  url);
+            NSLog(@"Error Logging");
         }
         else{
-            NSLog(@"Web service call to start the archive: %@", url);
+            NSLog(@"Logged");
         }
     }];
 }
