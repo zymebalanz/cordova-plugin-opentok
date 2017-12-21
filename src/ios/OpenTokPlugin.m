@@ -60,14 +60,13 @@
     [logData setObject:sessionId forKey:@"session_id"];
     request.HTTPBody = [NSJSONSerialization dataWithJSONObject:logData options:NSJSONWritingPrettyPrinted error:nil];
     
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error){
-        if (error){
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (error) {
             NSLog(@"Error Logging");
-        }
-        else{
+        } else {
             NSLog(@"Logged");
         }
-    }];
+    }] resume];
 }
 
 // Called by TB.initsession()
