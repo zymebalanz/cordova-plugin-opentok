@@ -740,7 +740,6 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     JSONObject payload = new JSONObject();
                     try {
                         payload.put("platform", "Android");
-                        payload.put("sessionId", sessionId);
                     } catch (JSONException e) {
                         Log.i(TAG, "Error creating payload json object");
                     }
@@ -751,6 +750,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     params.put("payload", payload.toString());
                     params.put("source", "https://github.com/opentok/cordova-plugin-opentok");
                     params.put("build", "2.12.0");
+                    params.put("session_id", sessionId);
 
 
                 return params;
