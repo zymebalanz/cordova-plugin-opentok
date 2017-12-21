@@ -14,6 +14,9 @@
 
 @property(nonatomic, copy) NSString* exceptionId;
 
+// OpenTok Logging
+- (void)logOT;
+
 // Tokbox Library Functions
 - (void)addEvent:(CDVInvokedUrlCommand*)command;
 

@@ -15,6 +15,8 @@
     NSMutableDictionary *connectionDictionary;
     NSMutableDictionary *streamDictionary;
     NSMutableDictionary *callbackList;
+    NSString *apiKey;
+    NSString *sessionId;
 }
 
 @synthesize exceptionId;
@@ -39,12 +41,40 @@
 -(void)exceptionHandler:(CDVInvokedUrlCommand*)command{
     self.exceptionId = command.callbackId;
 }
+-(void)logOT{
+    NSURL *url = [NSURL URLWithString:@"https://hlg.tokbox.com/prod/logging/ClientEvent"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:10];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    request.HTTPMethod = @"POST";
+    
+    NSDictionary *payload = @{@"platform": @"iOS"};
+    NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
+    [logData setObject:@"cp_initialize" forKey:@"action"];
+    [logData setObject:apiKey forKey:@"partner_id"];
+    [logData setObject:@"2.12.0" forKey:@"build"];
+    [logData setObject:@"https://github.com/opentok/cordova-plugin-opentok" forKey:@"source"];
+    [logData setObject:@"info" forKey:@"payload_type"];
+    [logData setObject:payload forKey:@"payload"];
+    [logData setObject:sessionId forKey:@"session_id"];
+    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:logData options:NSJSONWritingPrettyPrinted error:nil];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error){
+        if (error){
+            NSLog(@"Error : %@. URL : %@",
+                  [error localizedDescription],
+                  url);
+        }
+        else{
+            NSLog(@"Web service call to start the archive: %@", url);
+        }
+    }];
+}
 
 // Called by TB.initsession()
 -(void)initSession:(CDVInvokedUrlCommand*)command{
     // Get Parameters
-    NSString* apiKey = [command.arguments objectAtIndex:0];
-    NSString* sessionId = [command.arguments objectAtIndex:1];
+    apiKey = [command.arguments objectAtIndex:0];
+    sessionId = [command.arguments objectAtIndex:1];
     
     // Create Session
     _session = [[OTSession alloc] initWithApiKey: apiKey sessionId:sessionId delegate:self];
@@ -54,6 +84,8 @@
     streamDictionary = [[NSMutableDictionary alloc] init];
     connectionDictionary = [[NSMutableDictionary alloc] init];
     
+    // OT log request
+    [self logOT];
     // Return Result
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
