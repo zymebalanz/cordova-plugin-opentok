@@ -47,7 +47,9 @@
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
     
-    NSDictionary *payload = @{@"platform": @"iOS"};
+    NSMutableDictionary *payload = [[NSMutableDictionary alloc]init];
+    [payload setObject:@"iOS" forKey:@"platform"];
+    [payload setObject:@"3.1" forKey:@"cp_version"];
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
     [logData setObject:@"cp_initialize" forKey:@"action"];
     [logData setObject:apiKey forKey:@"partner_id"];
