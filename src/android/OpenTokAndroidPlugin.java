@@ -750,7 +750,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     params.put("partner_id", apiKey);
                     params.put("payload", payload.toString());
                     params.put("source", "https://github.com/opentok/cordova-plugin-opentok");
-                    params.put("build", "2.12.0");
+                    params.put("build", "2.13.0");
                     params.put("session_id", sessionId);
 
 
