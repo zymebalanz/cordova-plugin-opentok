@@ -53,7 +53,7 @@
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
     [logData setObject:@"cp_initialize" forKey:@"action"];
     [logData setObject:apiKey forKey:@"partner_id"];
-    [logData setObject:@"2.12.0" forKey:@"build"];
+    [logData setObject:@"2.13.0" forKey:@"build"];
     [logData setObject:@"https://github.com/opentok/cordova-plugin-opentok" forKey:@"source"];
     [logData setObject:@"info" forKey:@"payload_type"];
     [logData setObject:payload forKey:@"payload"];
