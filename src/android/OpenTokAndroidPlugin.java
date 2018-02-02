@@ -197,6 +197,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 String publisherName = "Android-Cordova-Publisher";
                 String frameRate = "FPS_30";
                 String resolution = "MEDIUM";
+                String cameraName = "front";
                 try {
                     publisherName = this.mProperty.getString(0);
                     audioBitrate = this.mProperty.getInt(12);
@@ -206,6 +207,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     audioFallbackEnabled = this.mProperty.getString(11).equals("true");
                     publishVideo = this.mProperty.getString(7).equals("true");
                     publishAudio = this.mProperty.getString(6).equals("true");
+                    cameraName = this.mProperty.getString(8).equals("back") ? back : cameraName;
                     if (compareStrings(this.mProperty.getString(16), "1280x720")) {
                         resolution = "HIGH";
                     }
@@ -230,6 +232,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 mPublisher.setAudioFallbackEnabled(audioFallbackEnabled);
                 mPublisher.setPublishAudio(publishVideo);
                 mPublisher.setPublishAudio(publishAudio);
+                if (cameraName.equals("back")) {
+                    mPublisher.cycleCamera();
+                }
                 this.mView = mPublisher.getView();
                 frame.addView(this.mView);
                 mSession.publish(mPublisher);
@@ -247,14 +252,6 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         @Override
         public void onStreamCreated(PublisherKit arg0, Stream arg1) {
             Log.i(TAG, "publisher stream received");
-            try {
-                if (compareStrings(this.mProperty.getString(8), "back")) {
-                    Log.i(TAG, "swapping camera");
-                    mPublisher.swapCamera(); // default is front
-                }
-            } catch (Exception e) {
-                Log.i(TAG, "error when trying to retrieve cameraName property");
-            }
             streamCollection.put(arg1.getStreamId(), arg1);
             triggerStreamCreated(arg1, "publisherEvents");
         }
