@@ -207,7 +207,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     audioFallbackEnabled = this.mProperty.getString(11).equals("true");
                     publishVideo = this.mProperty.getString(7).equals("true");
                     publishAudio = this.mProperty.getString(6).equals("true");
-                    cameraName = this.mProperty.getString(8).equals("back") ? back : cameraName;
+                    cameraName = this.mProperty.getString(8).equals("back") ? "back" : cameraName;
                     if (compareStrings(this.mProperty.getString(16), "1280x720")) {
                         resolution = "HIGH";
                     }
