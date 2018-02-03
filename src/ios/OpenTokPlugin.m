@@ -49,7 +49,7 @@
     
     NSMutableDictionary *payload = [[NSMutableDictionary alloc]init];
     [payload setObject:@"iOS" forKey:@"platform"];
-    [payload setObject:@"3.1.1" forKey:@"cp_version"];
+    [payload setObject:@"3.1.2" forKey:@"cp_version"];
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
     [logData setObject:@"cp_initialize" forKey:@"action"];
     [logData setObject:apiKey forKey:@"partner_id"];
