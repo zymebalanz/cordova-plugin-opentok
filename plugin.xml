@@ -77,4 +77,9 @@
         <access origin="*" />
       </config-file>
     </platform>
+
+    <platform name="browser">
+      <hook type="before_plugin_install" src="scripts/downloadJSSDK.js" />
+      <asset src="node_modules/@opentok/client/dist/js/opentok.min.js" target="opentok.js"/>
+  </platform>
 </plugin>
