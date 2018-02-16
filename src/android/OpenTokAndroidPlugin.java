@@ -45,6 +45,8 @@ import com.opentok.android.Subscriber;
 import com.opentok.android.SubscriberKit;
 import com.opentok.android.BaseVideoRenderer;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
+
 public class OpenTokAndroidPlugin extends CordovaPlugin
         implements  Session.SessionListener,
                     Session.ConnectionListener,
@@ -386,6 +388,22 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         _cordova = cordova;
         _webView = webView;
+
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // original layout
+                ViewGroup frameLayout = (ViewGroup) _webView.getView().getParent();
+                ViewGroup layoutParent = (ViewGroup) frameLayout.getParent();
+                layoutParent.removeView(frameLayout);
+
+                // Observable scroll view with webView and cameraViews as children
+                ObservableScrollView scrollView = new ObservableScrollView(_cordova.getActivity().getApplicationContext());
+                scrollView.addView(frameLayout);
+                layoutParent.addView(scrollView);
+            }
+        });
+
         Log.d(TAG, "Initialize Plugin");
         // By default, get a pointer to mainView and add mainView to the viewList as it always exists (hold cordova's view)
         if (!viewList.has("mainView")) {
