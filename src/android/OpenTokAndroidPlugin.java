@@ -176,12 +176,21 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             cordova.getActivity().runOnUiThread(this);
         }
 
+        public void stopPublishing() {
+            ViewGroup parent = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
+            parent.removeView(this.mView);
+            if(this.mPublisher != null){
+                mSession.unpublish(this.mPublisher);
+            }
+        }
 
         public void destroyPublisher() {
             ViewGroup parent = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
             parent.removeView(this.mView);
-            this.mPublisher.destroy();
-            this.mPublisher = null;
+            if (this.mPublisher != null) {
+                this.mPublisher.destroy();
+                this.mPublisher = null;
+            }
         }
 
         public void run() {
@@ -295,7 +304,10 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         public void removeStreamView() {
             ViewGroup frame = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
             frame.removeView(this.mView);
-            mSubscriber.destroy();
+            if(mSubscriber != null) {
+                mSession.unsubscribe(mSubscriber);
+                mSubscriber.destroy();
+            }
         }
 
         public void run() {
@@ -492,9 +504,31 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 mSession.sendSignal(args.getString(0), args.getString(1), c);
             }
         } else if (action.equals("unpublish")) {
-
+            Log.i( TAG, "unpublish command called");
+            if (myPublisher != null) {
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        myPublisher.stopPublishing();
+                    }
+                });
+                callbackContext.success();
+                return true;
+            }
         } else if (action.equals("unsubscribe")) {
-
+            Log.i( TAG, "unsubscribe command called");
+            Log.i( TAG, "unsubscribe data: " + args.toString() );
+            final RunnableSubscriber runsub = subscriberCollection.get( args.getString(0) );
+            if (runsub != null) {
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runsub.removeStreamView();
+                    }
+                });
+                callbackContext.success();
+                return true;
+            }
         } else if (action.equals("subscribe")) {
             Log.i(TAG, "subscribe command called");
             Log.i(TAG, "subscribe data: " + args.toString());
