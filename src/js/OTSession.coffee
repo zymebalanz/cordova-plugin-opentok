@@ -110,7 +110,7 @@ class TBSession
     console.log("JS: Unpublish")
     element = document.getElementById( @publisher.domId )
     if(element)
-      element.parentNode.removeChild(element)
+      @resetElement(element)
       TBUpdateObjects()
     return Cordova.exec(TBSuccess, TBError, OTPlugin, "unpublish", [] )
   unsubscribe: (subscriber) ->
@@ -136,8 +136,8 @@ class TBSession
     objects = document.getElementsByClassName('OT_root')
     while( objects.length > 0 )
       e = objects[0]
-      if e and e.parentNode and e.parentNode.removeChild
-        e.parentNode.removeChild(e)
+      if e
+        @resetElement(e)
       objects = document.getElementsByClassName('OT_root')
   resetElement: (element) =>
     attributes = ['style', 'data-streamid', 'class']

@@ -163,7 +163,7 @@ var OTPublisherError, OTReplacePublisher, TBError, TBGenerateDomHelper, TBGetScr
 streamElements = {};
 
 getPosition = function(divName) {
-  var computedStyle, curleft, curtop, height, marginBottom, marginLeft, marginRight, marginTop, pubDiv, width;
+  var computedStyle, curleft, curtop, height, pubDiv, width;
   pubDiv = document.getElementById(divName);
   if (!pubDiv) {
     return {};
@@ -177,15 +177,11 @@ getPosition = function(divName) {
     curleft += pubDiv.offsetLeft;
     curtop += pubDiv.offsetTop;
   }
-  marginTop = parseInt(computedStyle.marginTop) || 0;
-  marginBottom = parseInt(computedStyle.marginBottom) || 0;
-  marginLeft = parseInt(computedStyle.marginLeft) || 0;
-  marginRight = parseInt(computedStyle.marginRight) || 0;
   return {
-    top: curtop + marginTop,
-    left: curleft + marginLeft,
-    width: width - (marginLeft + marginRight),
-    height: height - (marginTop + marginBottom)
+    top: curtop,
+    left: curleft,
+    width: width,
+    height: height
   };
 };
 
@@ -628,7 +624,7 @@ TBSession = (function() {
     console.log("JS: Unpublish");
     element = document.getElementById(this.publisher.domId);
     if (element) {
-      element.parentNode.removeChild(element);
+      this.resetElement(element);
       TBUpdateObjects();
     }
     return Cordova.exec(TBSuccess, TBError, OTPlugin, "unpublish", []);
@@ -678,8 +674,8 @@ TBSession = (function() {
     _results = [];
     while (objects.length > 0) {
       e = objects[0];
-      if (e && e.parentNode && e.parentNode.removeChild) {
-        e.parentNode.removeChild(e);
+      if (e) {
+        this.resetElement(e);
       }
       _results.push(objects = document.getElementsByClassName('OT_root'));
     }
