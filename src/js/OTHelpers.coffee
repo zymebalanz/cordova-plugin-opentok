@@ -19,15 +19,11 @@ getPosition = (divName) ->
   while(pubDiv = pubDiv.offsetParent)
     curleft += pubDiv.offsetLeft
     curtop += pubDiv.offsetTop
-  marginTop = parseInt(computedStyle.marginTop) || 0
-  marginBottom = parseInt(computedStyle.marginBottom) || 0
-  marginLeft = parseInt(computedStyle.marginLeft) || 0
-  marginRight = parseInt(computedStyle.marginRight) || 0
   return {
-    top:curtop + marginTop
-    left:curleft + marginLeft
-    width:width - (marginLeft + marginRight)
-    height:height - (marginTop + marginBottom)
+    top:curtop
+    left:curleft
+    width:width
+    height:height
   }
 
 replaceWithVideoStream = (divName, streamId, properties) ->
