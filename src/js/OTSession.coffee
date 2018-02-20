@@ -120,8 +120,8 @@ class TBSession
     console.log("JS: Unsubscribing")
     element = streamElements[ elementId ]
     if(element)
-      element.parentNode.removeChild(element)
-      delete( streamElements[ streamId ] )
+      @resetElement(element)
+      delete( streamElements[ elementId ] )
       TBUpdateObjects()
     return Cordova.exec(TBSuccess, TBError, OTPlugin, "unsubscribe", [subscriber.streamId] )
 
