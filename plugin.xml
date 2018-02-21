@@ -67,6 +67,14 @@
       <framework src="Security.framework" />
       <framework src="CFNetwork.framework" />
 
+      <!-- Add support for background audio to the plist -->
+      <!-- https://tokbox.com/developer/sdks/ios/background-state.html -->
+      <config-file target="*-Info.plist" parent="UIBackgroundModes">
+        <array>
+          <string>audio</string>
+        </array>
+      </config-file>
+
       <!-- Adopts project's config.xml to include the OpenTokPlugin and domain whitelists -->
       <config-file target="config.xml" parent="/*/plugins">
           <feature name="OpenTokPlugin">
