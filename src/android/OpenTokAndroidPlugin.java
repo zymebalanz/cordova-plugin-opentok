@@ -23,6 +23,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -78,11 +79,10 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         public View mView;
         public ArrayList<RunnableUpdateViews> allStreamViews;
 
-
         public class CustomComparator implements Comparator<RunnableUpdateViews> {
             @Override
             public int compare(RunnableUpdateViews object1, RunnableUpdateViews object2) {
-                return object2.getZIndex() - object1.getZIndex();
+                return object1.getZIndex() - object2.getZIndex();
             }
         }
 
@@ -94,13 +94,19 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             if (myPublisher != null) {
                 allStreamViews.add(myPublisher);
             }
+
+            // Sort is still needed, because we need to sort from negative to positive for the z translation.
             Collections.sort(allStreamViews, new CustomComparator());
 
             for (RunnableUpdateViews viewContainer : allStreamViews) {
-                ViewGroup parent = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
-                if (null != parent) {
-                    parent.removeView(viewContainer.mView);
-                    parent.addView(viewContainer.mView);
+                // Set depth location of camera view based on CSS z-index.
+                // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
+                viewContainer.mView.setTranslationZ(viewContainer.getZIndex());
+
+                // If the zIndex is 0(default) bring the view to the top, last one wins.
+                // See: https://github.com/saghul/cordova-plugin-iosrtc/blob/5b6a180b324c8c9bac533fa481a457b74183c740/src/PluginMediaStreamRenderer.swift#L191
+                if(viewContainer.getZIndex() == 0) {
+                    viewContainer.mView.bringToFront();
                 }
             }
         }
@@ -198,7 +204,6 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         public void run() {
             Log.i(TAG, "view running on UIVIEW!!!");
             if (mPublisher == null) {
-                ViewGroup frame = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
                 boolean audioFallbackEnabled = true;
                 boolean videoTrack = true;
                 boolean audioTrack = true;
@@ -243,11 +248,18 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 mPublisher.setAudioFallbackEnabled(audioFallbackEnabled);
                 mPublisher.setPublishAudio(publishVideo);
                 mPublisher.setPublishAudio(publishAudio);
+
+                this.mView = mPublisher.getView();
+                ((ViewGroup) webView.getView().getParent()).addView(this.mView);
+
+                // Set depth location of camera view based on CSS z-index.
+                // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
+                this.mView.setTranslationZ(this.getZIndex());
+
                 if (cameraName.equals("back")) {
                     mPublisher.cycleCamera();
                 }
-                this.mView = mPublisher.getView();
-                frame.addView(this.mView);
+
                 mSession.publish(mPublisher);
             }
             super.run();
@@ -319,9 +331,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 mSubscriber.setVideoListener(this);
                 mSubscriber.setSubscriberListener(this);
                 mSubscriber.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
-                ViewGroup frame = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
                 this.mView = mSubscriber.getView();
-                frame.addView(this.mView);
+
+                ((ViewGroup) webView.getView().getParent()).addView(this.mView);
+
+                // Set depth location of camera view based on CSS z-index.
+                // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
+                this.mView.setTranslationZ(this.getZIndex());
+
                 mSession.subscribe(mSubscriber);
                 Log.i(TAG, "subscriber view is added to parent view!");
             }
@@ -400,6 +417,10 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         _cordova = cordova;
         _webView = webView;
+
+        // Make the web view transparent.
+        _webView.getView().setBackgroundColor(Color.argb(1, 0, 0, 0));
+
 
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -766,15 +787,15 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         RequestQueue queue = Volley.newRequestQueue(this.cordova.getActivity().getApplicationContext());
         String url = "https://hlg.tokbox.com/prod/logging/ClientEvent";
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-            new Response.Listener<String>() 
+            new Response.Listener<String>()
             {
                 @Override
                 public void onResponse(String response) {
                     // response
                     Log.i(TAG, "Log Response: " + response);
                 }
-            }, 
-            new Response.ErrorListener() 
+            },
+            new Response.ErrorListener()
             {
                  @Override
                  public void onErrorResponse(VolleyError error) {
@@ -782,9 +803,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                      Log.i(TAG, "Error logging");
                }
             }
-        ) {     
+        ) {
             @Override
-            protected Map<String, String> getParams() 
+            protected Map<String, String> getParams()
             {
                     JSONObject payload = new JSONObject();
                     try {
@@ -793,7 +814,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     } catch (JSONException e) {
                         Log.i(TAG, "Error creating payload json object");
                     }
-                    Map<String, String>  params = new HashMap<String, String>();  
+                    Map<String, String>  params = new HashMap<String, String>();
                     params.put("action", "cp_initialize");
                     params.put("payload_type", "info");
                     params.put("partner_id", apiKey);

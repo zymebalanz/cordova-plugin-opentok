@@ -91,6 +91,25 @@ To use the OpenTok Cordova Plugin, include the OpenTok JavaScript file in your H
 	</tr>
 </table>
 
+## Positioning the camera's behind or before webview
+It is possible to put the native camera's for publishers and subscribers behind the Cordova Webview, enabling you to put HTML buttons on top of the video. You can place video's behind the Webview with a negative `z-index`. Also your HTML should be transparent. For example you need to have something like this in your CSS for the transparency:
+```css
+# We can use class OT_root in our repository, but the main things is that the publisher container gets a black background color from OT, this needs to be removed in your CSS!
+html, body, .OT_root {
+  background: transparent !important;
+}
+
+# Each publisher and eachsubscriber video element should have display none
+.OT_root video {
+  display: none !important;
+}
+```
+The `z-index` is respected as follows:
+* If no `z-index `is given the behavior is the same as now.
+* If two videos have the same `z-index` (or don't have it) and share position, last one wins.
+* Videos with negative `z-index` are just visible if body's `background-color` or `background` is set to transparent.
+* A video with `z-index: -3` will be placed behind videos with `z-index: -1`, `z-index: 0`, `z-index: 10`, or unset `z-index`.
+* A video with `z-index: 999` will be placed on top of videos with `z-index: 888`, `z-index: 0`, `z-index: -10`, or unset `z-index`.
 
 ## Important Notes!
 
