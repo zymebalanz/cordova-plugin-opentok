@@ -84,6 +84,14 @@
       <config-file target="config.xml" parent="/*">
         <access origin="*" />
       </config-file>
+
+      <!-- add required entries into plist file -->
+      <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
+        <string>The camera is required to publish video</string>
+      </edit-config>
+      <edit-config target="NSMicrophoneUsageDescription" file="*-Info.plist" mode="merge">
+        <string>The microphone is required to publish audio</string>
+      </edit-config>
     </platform>
 
     <platform name="browser">
