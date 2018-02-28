@@ -78,7 +78,6 @@
 
       <!-- Adopts project's config.xml to include the OpenTokPlugin and domain whitelists -->
       <config-file target="config.xml" parent="/*">
-        <access origin="*" />
         <feature name="OpenTokPlugin">
           <param name="ios-package" value="OpenTokPlugin"/>
           <param name="onload" value="true"/>
