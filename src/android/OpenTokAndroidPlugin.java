@@ -980,6 +980,22 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             stream.put("fps", -999);
             stream.put("hasAudio", arg1.hasAudio());
             stream.put("hasVideo", arg1.hasVideo());
+
+            JSONObject videoDimensions = new JSONObject();
+            try {
+                videoDimensions.put("width", arg1.getVideoWidth());
+                videoDimensions.put("height", arg1.getVideoHeight());
+            } catch (JSONException e) {}
+            stream.put("videoDimensions", videoDimensions);
+
+            String videoType = "custom";
+            if(arg1.getStreamVideoType() == Stream.StreamVideoType.StreamVideoTypeCamera) {
+                videoType = "camera";
+            } else if(arg1.getStreamVideoType() == Stream.StreamVideoType.StreamVideoTypeScreen) {
+                videoType = "screen";
+            }
+            stream.put("videoType", videoType);
+
             stream.put("name", arg1.getName());
             stream.put("streamId", arg1.getStreamId());
         } catch (Exception e) {
