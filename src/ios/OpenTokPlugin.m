@@ -273,23 +273,27 @@
     NSString* sid = [command.arguments objectAtIndex:0];
     OTSubscriber * subscriber = [subscriberDictionary objectForKey:sid];
     NSString* val = [command.arguments objectAtIndex:1];
-    BOOL subscribeAudio = YES;
-    if ([val isEqualToString:@"false"]) {
-        subscribeAudio = NO;
+    if (subscriber) {
+        BOOL subscribeAudio = YES;
+        if ([val isEqualToString:@"false"]) {
+            subscribeAudio = NO;
+        }
+        NSLog(@"setting subscribeToAudio");
+        [subscriber setSubscribeToAudio:subscribeAudio];
     }
-    NSLog(@"setting subscribeToAudio");
-    [subscriber setSubscribeToAudio:subscribeAudio];
 }
 - (void)subscribeToVideo:(CDVInvokedUrlCommand*)command{
     NSString* sid = [command.arguments objectAtIndex:0];
     OTSubscriber * subscriber = [subscriberDictionary objectForKey:sid];
     NSString* val = [command.arguments objectAtIndex:1];
-    BOOL subscribeVideo = YES;
-    if ([val isEqualToString:@"false"]) {
-        subscribeVideo = NO;
+    if (subscriber) {
+        BOOL subscribeVideo = YES;
+        if ([val isEqualToString:@"false"]) {
+            subscribeVideo = NO;
+        }
+        NSLog(@"setting subscribeToVideo");
+        [subscriber setSubscribeToVideo:subscribeVideo];
     }
-    NSLog(@"setting subscribeToVideo");
-    [subscriber setSubscribeToVideo:subscribeVideo];
 }
 
 

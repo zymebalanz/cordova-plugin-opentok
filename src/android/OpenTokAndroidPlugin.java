@@ -634,21 +634,25 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         } else if (action.equals("subscribeToAudio")) {
             RunnableSubscriber runsub = subscriberCollection.get(args.getString(0));
             String val = args.getString(1);
-            boolean subscribeAudio = true;
-            if (val.equalsIgnoreCase("false")) {
-                subscribeAudio = false;
+            if(runsub != null) {
+                boolean subscribeAudio = true;
+                if (val.equalsIgnoreCase("false")) {
+                    subscribeAudio = false;
+                }
+                Log.i(TAG, "setting subscribeToAudio");
+                runsub.subscribeToAudio(subscribeAudio);
             }
-            Log.i(TAG, "setting subscribeToAudio");
-            runsub.subscribeToAudio(subscribeAudio);
         } else if (action.equals("subscribeToVideo")) {
             RunnableSubscriber runsub = subscriberCollection.get(args.getString(0));
             String val = args.getString(1);
-            boolean subscribeVideo = true;
-            if (val.equalsIgnoreCase("false")) {
-                subscribeVideo = false;
+            if(runsub != null) {
+                boolean subscribeVideo = true;
+                if (val.equalsIgnoreCase("false")) {
+                    subscribeVideo = false;
+                }
+                Log.i(TAG, "setting subscribeToVideo");
+                runsub.subscribeToVideo(subscribeVideo);
             }
-            Log.i(TAG, "setting subscribeToVideo");
-            runsub.subscribeToVideo(subscribeVideo);
         } else if (action.equals("updateView")) {
             if (args.getString(0).equals("TBPublisher") && myPublisher != null && sessionConnected) {
                 Log.i(TAG, "updating view for publisher");
