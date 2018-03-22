@@ -225,7 +225,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             mPublisher.setAudioLevelListener(this);
             mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
             mPublisher.setAudioFallbackEnabled(audioFallbackEnabled);
-            mPublisher.setPublishAudio(publishVideo);
+            mPublisher.setPublishVideo(publishVideo);
             mPublisher.setPublishAudio(publishAudio);
 
             if (cameraName.equals("back")) {
