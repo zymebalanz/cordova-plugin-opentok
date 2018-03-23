@@ -298,7 +298,11 @@
 // Called by session.unpublish(...)
 - (void)unpublish:(CDVInvokedUrlCommand*)command{
     NSLog(@"iOS Unpublishing publisher");
-    [_session unpublish:_publisher error:nil];
+    @try {
+        [_session unpublish:_publisher error:nil];
+    } @catch (NSException *exception) {
+        NSLog(@"Could not unpublish Publisher");
+    }
 }
 
 // Called by session.subscribe(streamId, top, left)
@@ -346,9 +350,13 @@
     //Get Parameters
     NSString* sid = [command.arguments objectAtIndex:0];
     OTSubscriber * subscriber = [subscriberDictionary objectForKey:sid];
-    [_session unsubscribe:subscriber error:nil];
-    [subscriber.view removeFromSuperview];
-    [subscriberDictionary removeObjectForKey:sid];
+    @try {
+        [_session unsubscribe:subscriber error:nil];
+        [subscriber.view removeFromSuperview];
+        [subscriberDictionary removeObjectForKey:sid];
+    } @catch (NSException *exception) {
+        NSLog(@"Could not unsubscribe Subscribe");
+    }
 }
 
 // Called by session.unsubscribe(streamId, top, left)

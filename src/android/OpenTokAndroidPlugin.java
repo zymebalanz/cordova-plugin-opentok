@@ -180,6 +180,57 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             edit.clear();
             edit.putBoolean("opentok.publisher.accepted", true);
             edit.commit();
+
+
+            boolean audioFallbackEnabled = true;
+            boolean videoTrack = true;
+            boolean audioTrack = true;
+            boolean publishAudio = true;
+            boolean publishVideo = true;
+            int audioBitrate = 40000;
+            String publisherName = "Android-Cordova-Publisher";
+            String frameRate = "FPS_30";
+            String resolution = "MEDIUM";
+            String cameraName = "front";
+            try {
+                publisherName = this.mProperty.getString(0);
+                audioBitrate = this.mProperty.getInt(12);
+                frameRate = "FPS_" + this.mProperty.getString(15);
+                videoTrack = this.mProperty.getString(14).equals("true");
+                audioTrack = this.mProperty.getString(13).equals("true");
+                audioFallbackEnabled = this.mProperty.getString(11).equals("true");
+                publishVideo = this.mProperty.getString(7).equals("true");
+                publishAudio = this.mProperty.getString(6).equals("true");
+                cameraName = this.mProperty.getString(8).equals("back") ? "back" : cameraName;
+                if (compareStrings(this.mProperty.getString(16), "1280x720")) {
+                    resolution = "HIGH";
+                }
+                if (compareStrings(this.mProperty.getString(16), "352x288")) {
+                    resolution = "LOW";
+                }
+                Log.i(TAG, "publisher properties sanitized");
+            } catch (Exception e) {
+                Log.i(TAG, "Unable to set publisher properties");
+            }
+            mPublisher = new Publisher.Builder(cordova.getActivity().getApplicationContext())
+                    .videoTrack(videoTrack)
+                    .audioTrack(audioTrack)
+                    .name(publisherName)
+                    .audioBitrate(audioBitrate)
+                    .frameRate(Publisher.CameraCaptureFrameRate.valueOf(frameRate))
+                    .resolution(Publisher.CameraCaptureResolution.valueOf(resolution))
+                    .build();
+            mPublisher.setCameraListener(this);
+            mPublisher.setPublisherListener(this);
+            mPublisher.setAudioLevelListener(this);
+            mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
+            mPublisher.setAudioFallbackEnabled(audioFallbackEnabled);
+            mPublisher.setPublishVideo(publishVideo);
+            mPublisher.setPublishAudio(publishAudio);
+
+            if (cameraName.equals("back")) {
+                mPublisher.cycleCamera();
+            }
         }
 
         public void setPropertyFromArray(JSONArray args) {
@@ -187,19 +238,24 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         }
 
         public void startPublishing() {
+            mSession.publish(mPublisher);
             cordova.getActivity().runOnUiThread(this);
         }
 
         public void stopPublishing() {
-            ViewGroup parent = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
+            ViewGroup parent = (ViewGroup) webView.getView().getParent();
             parent.removeView(this.mView);
             if(this.mPublisher != null){
-                mSession.unpublish(this.mPublisher);
+                try {
+                    mSession.unpublish(this.mPublisher);
+                } catch(Exception e) {
+                    Log.i(TAG, "Could not unpublish Publisher");
+                }
             }
         }
 
         public void destroyPublisher() {
-            ViewGroup parent = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
+            ViewGroup parent = (ViewGroup) webView.getView().getParent();
             parent.removeView(this.mView);
             if (this.mPublisher != null) {
                 this.mPublisher.destroy();
@@ -208,66 +264,13 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         }
 
         public void run() {
-            Log.i(TAG, "view running on UIVIEW!!!");
-            if (mPublisher == null) {
-                boolean audioFallbackEnabled = true;
-                boolean videoTrack = true;
-                boolean audioTrack = true;
-                boolean publishAudio = true;
-                boolean publishVideo = true;
-                int audioBitrate = 40000;
-                String publisherName = "Android-Cordova-Publisher";
-                String frameRate = "FPS_30";
-                String resolution = "MEDIUM";
-                String cameraName = "front";
-                try {
-                    publisherName = this.mProperty.getString(0);
-                    audioBitrate = this.mProperty.getInt(12);
-                    frameRate = "FPS_" + this.mProperty.getString(15);
-                    videoTrack = this.mProperty.getString(14).equals("true");
-                    audioTrack = this.mProperty.getString(13).equals("true");
-                    audioFallbackEnabled = this.mProperty.getString(11).equals("true");
-                    publishVideo = this.mProperty.getString(7).equals("true");
-                    publishAudio = this.mProperty.getString(6).equals("true");
-                    cameraName = this.mProperty.getString(8).equals("back") ? "back" : cameraName;
-                    if (compareStrings(this.mProperty.getString(16), "1280x720")) {
-                        resolution = "HIGH";
-                    }
-                    if (compareStrings(this.mProperty.getString(16), "352x288")) {
-                        resolution = "LOW";
-                    }
-                    Log.i(TAG, "publisher properties sanitized");
-                } catch (Exception e) {
-                    Log.i(TAG, "Unable to set publisher properties");
-                }
-                mPublisher = new Publisher.Builder(cordova.getActivity().getApplicationContext())
-                        .videoTrack(videoTrack)
-                        .audioTrack(audioTrack)
-                        .name(publisherName)
-                        .audioBitrate(audioBitrate)
-                        .frameRate(Publisher.CameraCaptureFrameRate.valueOf(frameRate))
-                        .resolution(Publisher.CameraCaptureResolution.valueOf(resolution))
-                        .build();
-                mPublisher.setCameraListener(this);
-                mPublisher.setPublisherListener(this);
-                mPublisher.setAudioLevelListener(this);
-                mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
-                mPublisher.setAudioFallbackEnabled(audioFallbackEnabled);
-                mPublisher.setPublishVideo(publishVideo);
-                mPublisher.setPublishAudio(publishAudio);
-
+            if(this.mView == null) {
                 this.mView = mPublisher.getView();
                 ((ViewGroup) webView.getView().getParent()).addView(this.mView);
 
                 // Set depth location of camera view based on CSS z-index.
                 // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
                 this.mView.setTranslationZ(this.getZIndex());
-
-                if (cameraName.equals("back")) {
-                    mPublisher.cycleCamera();
-                }
-
-                mSession.publish(mPublisher);
             }
             super.run();
         }
@@ -341,6 +344,15 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         public RunnableSubscriber(JSONArray args, Stream stream) {
             this.mProperty = args;
             mStream = stream;
+
+            logMessage("NEW SUBSCRIBER BEING CREATED");
+            mSubscriber = new Subscriber(cordova.getActivity(), mStream);
+            mSubscriber.setVideoListener(this);
+            mSubscriber.setSubscriberListener(this);
+            mSubscriber.setAudioLevelListener(this);
+            mSubscriber.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
+
+            mSession.subscribe(mSubscriber);
             cordova.getActivity().runOnUiThread(this);
         }
 
@@ -349,36 +361,30 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         }
 
         public void removeStreamView() {
-            ViewGroup frame = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
-            frame.removeView(this.mView);
+            ViewGroup parent = (ViewGroup) webView.getView().getParent();
+            parent.removeView(this.mView);
             if(mSubscriber != null) {
-                mSession.unsubscribe(mSubscriber);
-                mSubscriber.destroy();
+                try {
+                    mSession.unsubscribe(mSubscriber);
+                    mSubscriber.destroy();
+                } catch(Exception e) {
+                    Log.i(TAG, "Could not unsubscribe Subscriber");
+                }
             }
         }
 
         public void run() {
-            if (mSubscriber == null) {
-                logMessage("NEW SUBSCRIBER BEING CREATED");
-                mSubscriber = new Subscriber(cordova.getActivity(), mStream);
-                mSubscriber.setVideoListener(this);
-                mSubscriber.setSubscriberListener(this);
-                mSubscriber.setAudioLevelListener(this);
-                mSubscriber.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
+            if(this.mView == null) {
                 this.mView = mSubscriber.getView();
-
                 ((ViewGroup) webView.getView().getParent()).addView(this.mView);
 
                 // Set depth location of camera view based on CSS z-index.
                 // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
                 this.mView.setTranslationZ(this.getZIndex());
-
-                mSession.subscribe(mSubscriber);
                 Log.i(TAG, "subscriber view is added to parent view!");
             }
             super.run();
         }
-
 
         @Override
         public void onConnected(SubscriberKit arg0) {
@@ -517,14 +523,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             myPublisher = new RunnablePublisher(args);
         } else if (action.equals("destroyPublisher")) {
             if (myPublisher != null) {
-                cordova.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        myPublisher.destroyPublisher();
-                        myPublisher = null;
-                    }
-                });
-
+                myPublisher.destroyPublisher();
+                myPublisher = null;
                 callbackContext.success();
                 return true;
             }
@@ -594,12 +594,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         } else if (action.equals("unpublish")) {
             Log.i( TAG, "unpublish command called");
             if (myPublisher != null) {
-                cordova.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        myPublisher.stopPublishing();
-                    }
-                });
+                myPublisher.stopPublishing();
                 callbackContext.success();
                 return true;
             }
@@ -608,12 +603,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             Log.i( TAG, "unsubscribe data: " + args.toString() );
             final RunnableSubscriber runsub = subscriberCollection.get( args.getString(0) );
             if (runsub != null) {
-                cordova.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        runsub.removeStreamView();
-                    }
-                });
+                runsub.removeStreamView();
                 callbackContext.success();
                 return true;
             }
@@ -689,21 +679,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     public void onDisconnected(Session arg0) {
         sessionConnected = false;
 
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ViewGroup parent = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
-                if (myPublisher != null) {
-                    myPublisher.destroyPublisher();
-                    myPublisher = null;
-                }
-                for (Map.Entry<String, RunnableSubscriber> entry : subscriberCollection.entrySet()) {
-                    if (null != parent) {
-                        parent.removeView(entry.getValue().mView);
-                    }
-                }
-            }
-        });
+        if (myPublisher != null) {
+            myPublisher.destroyPublisher();
+            myPublisher = null;
+        }
+
+        for (Map.Entry<String, RunnableSubscriber> entry : subscriberCollection.entrySet()) {
+            entry.getValue().removeStreamView();
+        }
 
         // delete all data and prevent updateviews from drawing non existent things
         subscriberCollection.clear();
@@ -849,7 +832,6 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         this.onStreamPropertyChanged("hasAudio", newValue, oldValue, stream);
     }
 
-
     @Override
     public void onStreamHasVideoChanged(Session session, Stream stream, boolean newValue) {
         boolean oldValue = this.streamHasVideo.get(stream.getStreamId());
@@ -857,7 +839,6 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
 
         this.onStreamPropertyChanged("hasVideo", newValue, oldValue, stream);
     }
-
 
     @Override
     public void onStreamVideoDimensionsChanged(Session session, Stream stream, int width, int height) {
