@@ -17,6 +17,7 @@
     NSMutableDictionary *callbackList;
     NSString *apiKey;
     NSString *sessionId;
+    NSMutableDictionary *observersDictionary;
 }
 
 @synthesize exceptionId;
@@ -86,6 +87,7 @@
     subscriberDictionary = [[NSMutableDictionary alloc] init];
     streamDictionary = [[NSMutableDictionary alloc] init];
     connectionDictionary = [[NSMutableDictionary alloc] init];
+    observersDictionary = [[NSMutableDictionary alloc] init];
 
     // OT log request
     [self logOT];
@@ -608,6 +610,7 @@
     [self triggerStreamEvent: stream withEventType: @"publisherEvents" subEvent: @"streamCreated"];
 }
 - (void)publisher:(OTPublisherKit*)publisher streamDestroyed:(OTStream *)stream{
+    [self removeObserversFromStream: stream];
     [streamDictionary removeObjectForKey: stream.streamId];
     [self triggerStreamEvent: stream withEventType: @"publisherEvents" subEvent: @"streamDestroyed"];
 }
@@ -642,18 +645,26 @@
     return reasonData;
 }
 - (void)addObserversToStream: (OTStream*) stream{
-    // Add observers
-    [stream addObserver:self forKeyPath:@"hasAudio" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:(__bridge void * _Nullable)(stream)];
-    [stream addObserver:self forKeyPath:@"hasVideo" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:(__bridge void * _Nullable)(stream)];
-    [stream addObserver:self forKeyPath:@"videoDimensions" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:(__bridge void * _Nullable)(stream)];
-    [stream addObserver:self forKeyPath:@"videoType" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:(__bridge void * _Nullable)(stream)];
+    BOOL observersAdded = [[observersDictionary objectForKey:stream.streamId] boolValue];
+    if (!observersAdded) {
+        [observersDictionary setObject: [NSNumber numberWithBool:YES] forKey: stream.streamId];
+        // Add observers
+        [stream addObserver:self forKeyPath:@"hasAudio" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:(__bridge void * _Nullable)(stream)];
+        [stream addObserver:self forKeyPath:@"hasVideo" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:(__bridge void * _Nullable)(stream)];
+        [stream addObserver:self forKeyPath:@"videoDimensions" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:(__bridge void * _Nullable)(stream)];
+        [stream addObserver:self forKeyPath:@"videoType" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:(__bridge void * _Nullable)(stream)];
+    }
 }
 - (void)removeObserversFromStream: (OTStream*) stream{
-    // Removing observers
-    [stream removeObserver:self forKeyPath:@"hasAudio"];
-    [stream removeObserver:self forKeyPath:@"hasVideo"];
-    [stream removeObserver:self forKeyPath:@"videoDimensions"];
-    [stream removeObserver:self forKeyPath:@"videoType"];
+   BOOL observersAdded = [[observersDictionary objectForKey:stream.streamId] boolValue];
+    if (observersAdded) {
+        [observersDictionary removeObjectForKey: stream.streamId];
+        // Removing observers
+        [stream removeObserver:self forKeyPath:@"hasAudio"];
+        [stream removeObserver:self forKeyPath:@"hasVideo"];
+        [stream removeObserver:self forKeyPath:@"videoDimensions"];
+        [stream removeObserver:self forKeyPath:@"videoType"];
+    }
 }
 - (void)triggerStreamEvent: (OTStream*) stream withEventType: (NSString*) eventType subEvent: (NSString*) subEvent{
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
@@ -679,6 +690,21 @@
     [streamData setObject: [NSNumber numberWithInt:-999] forKey: @"fps" ];
     [streamData setObject: [NSNumber numberWithBool: stream.hasAudio] forKey: @"hasAudio" ];
     [streamData setObject: [NSNumber numberWithBool: stream.hasVideo] forKey: @"hasVideo" ];
+
+    NSMutableDictionary* videoDimensions = [[NSMutableDictionary alloc] init];
+    CGSize dimensions = stream.videoDimensions;
+    [videoDimensions setObject: @((NSInteger) (floor(dimensions.width))) forKey:@"width"];
+    [videoDimensions setObject: @((NSInteger) (floor(dimensions.height))) forKey:@"height"];
+    [streamData setObject: videoDimensions forKey:@"videoDimensions"];
+
+    NSString* videoType = @"custom";
+    if(stream.videoType == OTStreamVideoTypeCamera) {
+        videoType = @"camera";
+    } else if(stream.videoType == OTStreamVideoTypeScreen) {
+        videoType = @"screen";
+    }
+    [streamData setObject: videoType forKey:@"videoType"];
+
     [streamData setObject: stream.name forKey: @"name" ];
     [streamData setObject: stream.streamId forKey: @"streamId" ];
     return streamData;

@@ -837,7 +837,12 @@ TBSession = (function() {
   };
 
   TBSession.prototype.streamPropertyChanged = function(event) {
-    var streamEvent;
+    var stream, streamEvent;
+    stream = new TBStream(event.stream, this.connections[event.stream.connectionId]);
+    if (stream.streamId === "TBPublisher") {
+      this.publisher.stream = stream;
+    }
+    this.streams[stream.streamId] = stream;
     streamEvent = new TBEvent("streamPropertyChanged");
     streamEvent.stream = event.stream;
     streamEvent.changedProperty = event.changedProperty;

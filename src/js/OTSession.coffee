@@ -224,6 +224,11 @@ class TBSession
       delete( @streams[ stream.streamId ] )
     return @
   streamPropertyChanged: (event) ->
+    stream = new TBStream(event.stream, @connections[event.stream.connectionId])
+    if(stream.streamId == "TBPublisher")
+      @publisher.stream = stream
+    @streams[stream.streamId] = stream
+
     streamEvent = new TBEvent("streamPropertyChanged")
     streamEvent.stream = event.stream
     streamEvent.changedProperty = event.changedProperty
