@@ -1,5 +1,5 @@
 {
-  "name": "com.tokbox.cordova.opentok",
+  "name": "cordova-plugin-opentok",
   "version": "3.1.2",
   "description": "Add live video streaming to your Cordova Application",
   "cordova": {
