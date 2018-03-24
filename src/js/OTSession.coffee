@@ -157,7 +157,6 @@ class TBSession
   # event listeners
   # todo - other events: connectionCreated, connectionDestroyed, signal?, streamPropertyChanged, signal:type?
   eventReceived: (response) =>
-    pdebug "session event received", response
     @[response.eventType](response.data)
   connectionCreated: (event) =>
     connection = new TBConnection( event.connection )
@@ -167,7 +166,6 @@ class TBSession
     @dispatchEvent(connectionEvent)
     return @
   connectionDestroyed: (event) =>
-    pdebug "connectionDestroyedHandler", event
     connection = @connections[ event.connection.connectionId ]
     connectionEvent = new TBEvent("connectionDestroyed")
     connectionEvent.connection = connection
@@ -176,14 +174,12 @@ class TBSession
     delete( @connections[ connection.connectionId] )
     return @
   sessionConnected: (event) =>
-    pdebug "sessionConnectedHandler", event
     @dispatchEvent(new TBEvent("sessionConnected"))
     @connection = new TBConnection( event.connection )
     @connections[event.connection.connectionId] = @connection
     event = null
     return @
   sessionDisconnected: (event) =>
-    pdebug "sessionDisconnected event", event
     @alreadyPublishing = false
     sessionDisconnectedEvent = new TBEvent("sessionDisconnected")
     sessionDisconnectedEvent.reason = event.reason
@@ -199,7 +195,6 @@ class TBSession
     @dispatchEvent(sessionEvent)
     return @
   streamCreated: (event) =>
-    pdebug "streamCreatedHandler", event
     stream = new TBStream( event.stream, @connections[event.stream.connectionId] )
     @streams[ stream.streamId ] = stream
     streamEvent = new TBEvent("streamCreated")
@@ -208,7 +203,6 @@ class TBSession
     @dispatchEvent(streamEvent)
     return @
   streamDestroyed: (event) =>
-    pdebug "streamDestroyed event", event
     stream = @streams[event.stream.streamId]
     streamEvent = new TBEvent("streamDestroyed")
     streamEvent.stream = stream
@@ -249,7 +243,6 @@ class TBSession
       callbackFunc()
       return
   signalReceived: (event) =>
-    pdebug "signalReceived event", event
     streamEvent = new TBEvent("signal")
     streamEvent.type = event.type
     streamEvent.data = event.data

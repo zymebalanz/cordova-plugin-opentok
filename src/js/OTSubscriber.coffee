@@ -40,7 +40,6 @@ class TBSubscriber
       @id = divObject
       @element = document.getElementById(divObject)
 
-    pdebug "creating subscriber", properties
     @streamId = stream.streamId
     if(properties? && properties.width=="100%" && properties.height == "100%")
       @element.style.width="100%"
@@ -68,13 +67,11 @@ class TBSubscriber
     obj = replaceWithVideoStream(@element, stream.streamId, {width:width, height:height, insertMode:insertMode})
     position = getPosition(@element)
     ratios = TBGetScreenRatios()
-    pdebug "final subscriber position", position
     OT.getHelper().eventing(@)
     Cordova.exec(TBSuccess, TBError, OTPlugin, "subscribe", [stream.streamId, position.top, position.left, width, height, zIndex, subscribeToAudio, subscribeToVideo, ratios.widthRatio, ratios.heightRatio] )
     Cordova.exec(@eventReceived, TBSuccess, OTPlugin, "addEvent", ["subscriberEvents"] )
 
   eventReceived: (response) =>
-    pdebug "subscriber event received", response
     @[response.eventType](response.data)
   connected: (event) =>
     streamEvent = new TBEvent("connected")
