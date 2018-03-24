@@ -270,6 +270,35 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+#pragma mark Subscriber Methods
+- (void)subscribeToAudio:(CDVInvokedUrlCommand*)command{
+    NSString* sid = [command.arguments objectAtIndex:0];
+    OTSubscriber * subscriber = [subscriberDictionary objectForKey:sid];
+    NSString* val = [command.arguments objectAtIndex:1];
+    if (subscriber) {
+        BOOL subscribeAudio = YES;
+        if ([val isEqualToString:@"false"]) {
+            subscribeAudio = NO;
+        }
+        NSLog(@"setting subscribeToAudio");
+        [subscriber setSubscribeToAudio:subscribeAudio];
+    }
+}
+- (void)subscribeToVideo:(CDVInvokedUrlCommand*)command{
+    NSString* sid = [command.arguments objectAtIndex:0];
+    OTSubscriber * subscriber = [subscriberDictionary objectForKey:sid];
+    NSString* val = [command.arguments objectAtIndex:1];
+    if (subscriber) {
+        BOOL subscribeVideo = YES;
+        if ([val isEqualToString:@"false"]) {
+            subscribeVideo = NO;
+        }
+        NSLog(@"setting subscribeToVideo");
+        [subscriber setSubscribeToVideo:subscribeVideo];
+    }
+}
+
+
 
 #pragma mark Session Methods
 - (void)connect:(CDVInvokedUrlCommand *)command{
@@ -424,7 +453,6 @@
     [data setObject: @(audioLevel) forKey: @"audioLevel"];
     [self triggerJSEvent: @"subscriberEvents" withType: @"audioLevelUpdated" withData: data];
 }
-
 
 #pragma mark On property changed
 - (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {

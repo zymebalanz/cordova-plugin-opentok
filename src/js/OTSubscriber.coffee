@@ -28,8 +28,16 @@ class TBSubscriber
   on: (event, handler) ->
     return @
   subscribeToAudio: (value) ->
+    state = "true"
+    if value? and ( value == false or value == "false" )
+      state = "false"
+    Cordova.exec(TBSuccess, TBError, OTPlugin, "subscribeToAudio", [@streamId, state] );
     return @
   subscribeToVideo: (value) ->
+    state = "true"
+    if value? and ( value == false or value == "false" )
+      state = "false"
+    Cordova.exec(TBSuccess, TBError, OTPlugin, "subscribeToVideo", [@streamId, state] );
     return @
 
   constructor: (stream, divObject, properties) ->

@@ -951,10 +951,22 @@ TBSubscriber = (function() {
   };
 
   TBSubscriber.prototype.subscribeToAudio = function(value) {
+    var state;
+    state = "true";
+    if ((value != null) && (value === false || value === "false")) {
+      state = "false";
+    }
+    Cordova.exec(TBSuccess, TBError, OTPlugin, "subscribeToAudio", [this.streamId, state]);
     return this;
   };
 
   TBSubscriber.prototype.subscribeToVideo = function(value) {
+    var state;
+    state = "true";
+    if ((value != null) && (value === false || value === "false")) {
+      state = "false";
+    }
+    Cordova.exec(TBSuccess, TBError, OTPlugin, "subscribeToVideo", [this.streamId, state]);
     return this;
   };
 
