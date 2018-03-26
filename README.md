@@ -13,9 +13,13 @@ Make sure You have Cordova 3.5.0 or greater installed. If you haven't, take a lo
 
 2. To install the OpenTok Cordova plugin, run the following command in the root of your project:
 ```
-cordova plugin add https://github.com/opentok/cordova-plugin-opentok/
+cordova plugin add cordova-plugin-opentok
 ```  
-3. You can remove the existing OpenTok Cordova plugin by running the following command: 
+3. To remove OpenTok Cordova plugin 3.2.0 and above, use the following command:
+``` 
+cordova plugin remove cordova-plugin-opentok
+```
+4. To remove the old OpenTok Cordova plugin, use the following command:  
 ``` 
 cordova plugin remove com.tokbox.cordova.opentok
 ```
