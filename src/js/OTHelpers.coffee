@@ -7,9 +7,8 @@ streamElements = {} # keep track of DOM elements for each stream
 #
 # Helper methods
 #
-getPosition = (divName) ->
+getPosition = (pubDiv) ->
   # Get the position of element
-  pubDiv = document.getElementById(divName)
   if !pubDiv then return {}
   computedStyle = if window.getComputedStyle then getComputedStyle(pubDiv, null) else {}
   width = pubDiv.offsetWidth
@@ -19,27 +18,27 @@ getPosition = (divName) ->
   while(pubDiv = pubDiv.offsetParent)
     curleft += pubDiv.offsetLeft
     curtop += pubDiv.offsetTop
-  marginTop = parseInt(computedStyle.marginTop) || 0
-  marginBottom = parseInt(computedStyle.marginBottom) || 0
-  marginLeft = parseInt(computedStyle.marginLeft) || 0
-  marginRight = parseInt(computedStyle.marginRight) || 0
   return {
-    top:curtop + marginTop
-    left:curleft + marginLeft
-    width:width - (marginLeft + marginRight)
-    height:height - (marginTop + marginBottom)
+    top:curtop
+    left:curleft
+    width:width
+    height:height
   }
 
-replaceWithVideoStream = (divName, streamId, properties) ->
+replaceWithVideoStream = (element, streamId, properties) ->
   typeClass = if streamId == PublisherStreamId then PublisherTypeClass else SubscriberTypeClass
-  element = document.getElementById(divName)
-  element.setAttribute( "class", "OT_root #{typeClass}" )
-  element.setAttribute( "data-streamid", streamId )
-  element.style.width = properties.width+"px"
-  element.style.height = properties.height+"px"
-  element.style.overflow = "hidden"
-  element.style['background-color'] = "#000000"
-  streamElements[ streamId ] = element
+  if (properties.insertMode == "replace")
+    newElement = element
+  else
+    newElement = document.createElement( "div" )
+  newElement.setAttribute( "class", "OT_root #{typeClass}" )
+  newElement.setAttribute( "data-streamid", streamId )
+  newElement.setAttribute( "data-insertMode", properties.insertMode )
+  newElement.style.width = properties.width+"px"
+  newElement.style.height = properties.height+"px"
+  newElement.style.overflow = "hidden"
+  newElement.style['background-color'] = "#000000"
+  streamElements[ streamId ] = newElement
 
   internalDiv = document.createElement( "div" )
   internalDiv.setAttribute( "class", VideoContainerClass)
@@ -54,8 +53,15 @@ replaceWithVideoStream = (divName, streamId, properties) ->
   # todo: js change styles or append css stylesheets? Concern: users will not be able to change via css
 
   internalDiv.appendChild( videoElement )
-  element.appendChild( internalDiv )
-  return element
+  newElement.appendChild( internalDiv )
+
+  if (properties.insertMode == "append")
+    element.appendChild(newElement)
+  if (properties.insertMode == "before")
+    element.parentNode.insertBefore(newElement, element)
+  if (properties.insertMode == "after")
+    element.parentNode.insertBefore(newElement, element.nextSibling)
+  return newElement
 
 TBError = (error) ->
   console.log("Error: ", error)
@@ -80,8 +86,7 @@ TBUpdateObjects = ()->
     console.log("JS: Object updated")
     streamId = e.dataset.streamid
     console.log("JS sessionId: " + streamId )
-    id = e.id
-    position = getPosition(id)
+    position = getPosition(e)
     Cordova.exec(TBSuccess, TBError, OTPlugin, "updateView", [streamId, position.top, position.left, position.width, position.height, TBGetZIndex(e), ratios.widthRatio, ratios.heightRatio] )
   return
 TBGenerateDomHelper = ->
@@ -94,7 +99,6 @@ TBGenerateDomHelper = ->
 TBGetZIndex = (ele) ->
   while( ele? )
     val = document.defaultView.getComputedStyle(ele,null).getPropertyValue('z-index')
-    console.log val
     if ( parseInt(val) )
       return val
     ele = ele.offsetParent

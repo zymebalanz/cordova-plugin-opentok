@@ -36,12 +36,12 @@ class TBSession
     return @
   getSubscribersForStream: (stream) ->
     return @
-  publish: (divName, properties) =>
+  publish: (divObject, properties) =>
     if( @alreadyPublishing )
       pdebug("Session is already publishing", {})
       return
     @alreadyPublishing = true
-    @publisher = new TBPublisher(divName, properties)
+    @publisher = new TBPublisher(divObject, properties)
     @publish( @publisher )
   publish: () =>
     if( @alreadyPublishing )
@@ -72,16 +72,16 @@ class TBSession
       return subscriber
     if( three? )
       # stream, domId, properties || stream, domId, completionHandler || stream, properties, completionHandler
-      if( (typeof(two) == "string" || two.nodeType == 1) && typeof(three) == "object" )
+      if( (typeof(two) == "string" || two.nodeType == 1 || two instanceof Element) && typeof(three) == "object" )
         console.log("stream, domId, props")
         subscriber = new TBSubscriber(one, two, three)
         return subscriber
-      if( (typeof(two) == "string" || two.nodeType == 1) && typeof(three) == "function" )
+      if( (typeof(two) == "string" || two.nodeType == 1 || two instanceof Element) && typeof(three) == "function" )
         console.log("stream, domId, completionHandler")
         @subscriberCallbacks[one.streamId]=three
-        subscriber = new TBSubscriber(one, domId, {})
+        subscriber = new TBSubscriber(one, two, {})
         return subscriber
-      if( typeof(two) == "object" && typeof(three) == "function" )
+      if(typeof(two) == "object" && typeof(three) == "function" )
         console.log("stream, props, completionHandler")
         @subscriberCallbacks[one.streamId] = three
         domId = TBGenerateDomHelper()
@@ -89,7 +89,7 @@ class TBSession
         return subscriber
     if( two? )
       # stream, domId || stream, properties || stream,completionHandler
-      if( (typeof(two) == "string" || two.nodeType == 1) )
+      if( (typeof(two) == "string" || two.nodeType == 1 || two instanceof Element) )
         subscriber = new TBSubscriber(one, two, {})
         return subscriber
       if( typeof(two) == "object" )
@@ -108,9 +108,9 @@ class TBSession
   unpublish:() ->
     @alreadyPublishing = false
     console.log("JS: Unpublish")
-    element = document.getElementById( @publisher.domId )
+    element = @publisher.pubElement
     if(element)
-      element.parentNode.removeChild(element)
+      @resetElement(element)
       TBUpdateObjects()
     return Cordova.exec(TBSuccess, TBError, OTPlugin, "unpublish", [] )
   unsubscribe: (subscriber) ->
@@ -120,8 +120,8 @@ class TBSession
     console.log("JS: Unsubscribing")
     element = streamElements[ elementId ]
     if(element)
-      element.parentNode.removeChild(element)
-      delete( streamElements[ streamId ] )
+      @resetElement(element)
+      delete( streamElements[ elementId ] )
       TBUpdateObjects()
     return Cordova.exec(TBSuccess, TBError, OTPlugin, "unsubscribe", [subscriber.streamId] )
 
@@ -136,64 +136,78 @@ class TBSession
     objects = document.getElementsByClassName('OT_root')
     while( objects.length > 0 )
       e = objects[0]
-      if e and e.parentNode and e.parentNode.removeChild
-        e.parentNode.removeChild(e)
+      if e
+        @resetElement(e)
       objects = document.getElementsByClassName('OT_root')
   resetElement: (element) =>
-    attributes = ['style', 'data-streamid', 'class']
-    elementChildren = element.childNodes
-    element.removeAttribute attribute for attribute in attributes
-    for childElement in elementChildren
-      childClass = childElement.getAttribute 'class'
-      if childClass == 'OT_video-container'
-        element.removeChild childElement
-        break
+    insertMode = element.getAttribute('data-insertMode')
+    if (insertMode == "replace")
+      attributes = ['style', 'data-streamid', 'class', 'data-insertMode']
+      elementChildren = element.childNodes
+      element.removeAttribute attribute for attribute in attributes
+      for childElement in elementChildren
+        childClass = childElement.getAttribute 'class'
+        if childClass == 'OT_video-container'
+          element.removeChild childElement
+          break
+     else
+       element.parentNode.removeChild(element)
     return
     
   # event listeners
   # todo - other events: connectionCreated, connectionDestroyed, signal?, streamPropertyChanged, signal:type?
   eventReceived: (response) =>
-    pdebug "session event received", response
     @[response.eventType](response.data)
   connectionCreated: (event) =>
     connection = new TBConnection( event.connection )
-    connectionEvent = new TBEvent( {connection: connection } )
+    connectionEvent = new TBEvent("connectionCreated")
+    connectionEvent.connection = connection
     @connections[connection.connectionId] = connection
-    @trigger("connectionCreated", connectionEvent)
+    @dispatchEvent(connectionEvent)
     return @
   connectionDestroyed: (event) =>
-    pdebug "connectionDestroyedHandler", event
     connection = @connections[ event.connection.connectionId ]
-    connectionEvent = new TBEvent( {connection: connection, reason: "clientDisconnected" } )
-    @trigger("connectionDestroyed", connectionEvent)
+    connectionEvent = new TBEvent("connectionDestroyed")
+    connectionEvent.connection = connection
+    connectionEvent.reason = "clientDisconnected"
+    @dispatchEvent(connectionEvent)
     delete( @connections[ connection.connectionId] )
     return @
   sessionConnected: (event) =>
-    pdebug "sessionConnectedHandler", event
-    @trigger("sessionConnected")
+    @dispatchEvent(new TBEvent("sessionConnected"))
     @connection = new TBConnection( event.connection )
     @connections[event.connection.connectionId] = @connection
     event = null
     return @
   sessionDisconnected: (event) =>
-    pdebug "sessionDisconnected event", event
     @alreadyPublishing = false
-    sessionDisconnectedEvent = new TBEvent( { reason: event.reason } )
-    @trigger("sessionDisconnected", sessionDisconnectedEvent)
+    sessionDisconnectedEvent = new TBEvent("sessionDisconnected")
+    sessionDisconnectedEvent.reason = event.reason
+    @dispatchEvent(sessionDisconnectedEvent)
     @cleanUpDom()
     return @
+  sessionReconnected: (event) =>
+    sessionEvent = new TBEvent("sessionReconnected")
+    @dispatchEvent(sessionEvent)
+    return @
+  sessionReconnecting: (event) =>
+    sessionEvent = new TBEvent("sessionReconnecting")
+    @dispatchEvent(sessionEvent)
+    return @
   streamCreated: (event) =>
-    pdebug "streamCreatedHandler", event
     stream = new TBStream( event.stream, @connections[event.stream.connectionId] )
     @streams[ stream.streamId ] = stream
-    streamEvent = new TBEvent( {stream: stream } )
-    @trigger("streamCreated", streamEvent)
+    streamEvent = new TBEvent("streamCreated")
+    streamEvent.stream = stream
+    #streamEvent = new TBEvent( {stream: stream } )
+    @dispatchEvent(streamEvent)
     return @
   streamDestroyed: (event) =>
-    pdebug "streamDestroyed event", event
     stream = @streams[event.stream.streamId]
-    streamEvent = new TBEvent( {stream: stream, reason: "clientDisconnected" } )
-    @trigger("streamDestroyed", streamEvent)
+    streamEvent = new TBEvent("streamDestroyed")
+    streamEvent.stream = stream
+    streamEvent.reason = "clientDisconnected"
+    @dispatchEvent(streamEvent)
     # remove stream DOM
     if(stream)
       element = streamElements[ stream.streamId ]
@@ -202,6 +216,19 @@ class TBSession
         delete( streamElements[ stream.streamId ] )
         TBUpdateObjects()
       delete( @streams[ stream.streamId ] )
+    return @
+  streamPropertyChanged: (event) ->
+    stream = new TBStream(event.stream, @connections[event.stream.connectionId])
+    if(stream.streamId == "TBPublisher")
+      @publisher.stream = stream
+    @streams[stream.streamId] = stream
+
+    streamEvent = new TBEvent("streamPropertyChanged")
+    streamEvent.stream = event.stream
+    streamEvent.changedProperty = event.changedProperty
+    streamEvent.oldValue = event.oldValue
+    streamEvent.newValue = event.newValue
+    @dispatchEvent(streamEvent)
     return @
   subscribedToStream: (event) =>
     streamId = event.streamId
@@ -216,10 +243,27 @@ class TBSession
       callbackFunc()
       return
   signalReceived: (event) =>
-    pdebug "signalReceived event", event
-    streamEvent = new TBEvent( {type: event.type, data: event.data, from: @connections[event.connectionId] } )
-    @trigger("signal", streamEvent)
-    @trigger("signal:#{event.type}", streamEvent)
+    streamEvent = new TBEvent("signal")
+    streamEvent.type = event.type
+    streamEvent.data = event.data
+    streamEvent.from = @connections[event.connectionId]
+    @dispatchEvent(streamEvent)
+
+    streamEvent = new TBEvent("signal:#{event.type}")
+    streamEvent.type = event.type
+    streamEvent.data = event.data
+    streamEvent.from = @connections[event.connectionId]
+    @dispatchEvent(streamEvent)
+  archiveStarted: (event) ->
+    streamEvent = new TBEvent("archiveStarted")
+    streamEvent.id = event.id
+    streamEvent.name = event.name
+    @dispatch(streamEvent)
+  archiveStopped: (event) ->
+    streamEvent = new TBEvent("archiveStopped")
+    streamEvent.id = event.id
+    @dispatch(streamEvent)
+
 
   # deprecating
   addEventListener: (event, handler) -> # deprecating soon

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="com.tokbox.cordova.opentok"
+    id="cordova-plugin-opentok"
     version="3.1.2">
 
     <name>OpenTokCordovaPlugin</name>
@@ -11,6 +11,9 @@
 
     <platform name="android">
       <framework src="build-extras.gradle" custom="true" type="gradleReference" />
+      <framework src="com.android.support:appcompat-v7:23.1.0" />
+      <framework src="com.android.support:design:23.0.0" />
+      <framework src="com.android.volley:volley:1.1.0" />
       <asset src="www/opentok.js" target="opentok.js" />
   	  <source-file src="src/android/OpenTokAndroidPlugin.java" target-dir="src/com/tokbox/cordova/" />
       
@@ -29,6 +32,7 @@
       <config-file target="config.xml" parent="/*">
         <feature name="OpenTokPlugin">
           <param name="android-package" value="com.tokbox.cordova.OpenTokAndroidPlugin"/>
+          <param name="onload" value="true" />
         </feature>
       </config-file>  
       
@@ -67,14 +71,26 @@
       <framework src="Security.framework" />
       <framework src="CFNetwork.framework" />
 
+      <!-- Add support for background audio to the plist -->
+      <!-- https://tokbox.com/developer/sdks/ios/background-state.html -->
+      <config-file target="*-Info.plist" parent="UIBackgroundModes">
+        <array>
+          <string>audio</string>
+        </array>
+      </config-file>
+
       <!-- Adopts project's config.xml to include the OpenTokPlugin and domain whitelists -->
-      <config-file target="config.xml" parent="/*/plugins">
-          <feature name="OpenTokPlugin">
-              <param name="ios-package" value="OpenTokPlugin"/>
-          </feature>
-      </config-file>
       <config-file target="config.xml" parent="/*">
-        <access origin="*" />
+        <feature name="OpenTokPlugin">
+          <param name="ios-package" value="OpenTokPlugin"/>
+          <param name="onload" value="true"/>
+        </feature>
       </config-file>
+
     </platform>
+
+    <platform name="browser">
+      <hook type="before_plugin_install" src="scripts/downloadJSSDK.js" />
+      <asset src="node_modules/@opentok/client/dist/js/opentok.min.js" target="opentok.js"/>
+  </platform>
 </plugin>
