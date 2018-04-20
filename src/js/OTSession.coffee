@@ -244,16 +244,15 @@ class TBSession
       return
   signalReceived: (event) =>
     streamEvent = new TBEvent("signal")
-    streamEvent.type = event.type
     streamEvent.data = event.data
     streamEvent.from = @connections[event.connectionId]
     @dispatchEvent(streamEvent)
 
     streamEvent = new TBEvent("signal:#{event.type}")
-    streamEvent.type = event.type
     streamEvent.data = event.data
     streamEvent.from = @connections[event.connectionId]
     @dispatchEvent(streamEvent)
+    return @
   archiveStarted: (event) ->
     streamEvent = new TBEvent("archiveStarted")
     streamEvent.id = event.id
