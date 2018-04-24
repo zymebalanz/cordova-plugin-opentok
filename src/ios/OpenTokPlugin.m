@@ -630,7 +630,7 @@
 - (void)session:(OTSession*)session archiveStartedWithId:(nonnull NSString *)archiveId name:(NSString *_Nullable)name{
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     [data setObject: archiveId forKey: @"id"];
-    [data setObject: name forKey: @"name"];
+    [data setObject: (name == nil) ? @"" : name forKey: @"name"];
     [self triggerJSEvent: @"sessionEvents" withType: @"archiveStarted" withData: data];
 }
 - (void)session:(OTSession*)session archiveStoppedWithId:(nonnull NSString *)archiveId{
