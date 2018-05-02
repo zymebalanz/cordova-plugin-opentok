@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <Cordova/CDVPlugin.h>
 #import <UIKit/UIKit.h>
-#import <Opentok/Opentok.h>
+#import <OpenTok/OpenTok.h>
 
 @interface OpenTokPlugin : CDVPlugin <OTSessionDelegate, OTPublisherDelegate, OTSubscriberKitDelegate>
 
