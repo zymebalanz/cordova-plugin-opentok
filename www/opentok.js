@@ -873,14 +873,16 @@ TBSession = (function() {
     streamEvent = new TBEvent("archiveStarted");
     streamEvent.id = event.id;
     streamEvent.name = event.name;
-    return this.dispatch(streamEvent);
+    this.dispatchEvent(streamEvent);
+    return this;
   };
 
   TBSession.prototype.archiveStopped = function(event) {
     var streamEvent;
     streamEvent = new TBEvent("archiveStopped");
     streamEvent.id = event.id;
-    return this.dispatch(streamEvent);
+    this.dispatchEvent(streamEvent);
+    return this;
   };
 
   TBSession.prototype.addEventListener = function(event, handler) {
