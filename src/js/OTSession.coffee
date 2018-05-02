@@ -257,11 +257,13 @@ class TBSession
     streamEvent = new TBEvent("archiveStarted")
     streamEvent.id = event.id
     streamEvent.name = event.name
-    @dispatch(streamEvent)
+    @dispatchEvent(streamEvent)
+    return @
   archiveStopped: (event) ->
     streamEvent = new TBEvent("archiveStopped")
     streamEvent.id = event.id
-    @dispatch(streamEvent)
+    @dispatchEvent(streamEvent)
+    return @
 
 
   # deprecating
