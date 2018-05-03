@@ -546,7 +546,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             mSession.setReconnectionListener(this);
             mSession.setSignalListener(this);
             mSession.setStreamPropertiesListener(this);
-            logOT();
+            logOT(null);
 
             // publisher methods
         } else if (action.equals("setCameraPosition")) {
@@ -689,6 +689,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     // sessionListener
     @Override
     public void onConnected(Session arg0) {
+        logOT(arg0.getConnection().getConnectionId());
         Log.i(TAG, "session connected, triggering sessionConnected Event. My Cid is: " +
                 mSession.getConnection().getConnectionId());
         sessionConnected = true;
@@ -920,7 +921,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         }
     }
 
-    public void logOT() {
+    public void logOT(final String connectionId) {
         RequestQueue queue = Volley.newRequestQueue(this.cordova.getActivity().getApplicationContext());
         String url = "https://hlg.tokbox.com/prod/logging/ClientEvent";
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
@@ -952,14 +953,18 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                         Log.i(TAG, "Error creating payload json object");
                     }
                     Map<String, String>  params = new HashMap<String, String>();
-                    params.put("action", "cp_initialize");
                     params.put("payload_type", "info");
                     params.put("partner_id", apiKey);
                     params.put("payload", payload.toString());
                     params.put("source", "https://github.com/opentok/cordova-plugin-opentok");
                     params.put("build", "2.13.0");
                     params.put("session_id", sessionId);
-
+                    if (connectionId != null) {
+                        params.put("action", "cp_on_connect");
+                        params.put("connectionId", connectionId);                
+                    } else {
+                        params.put("action", "cp_initialize");
+                    }
 
                 return params;
             }
