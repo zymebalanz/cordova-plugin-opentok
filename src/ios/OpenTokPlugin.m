@@ -46,7 +46,7 @@
 -(void)exceptionHandler:(CDVInvokedUrlCommand*)command{
     self.exceptionId = command.callbackId;
 }
--(void)logOT{
+-(void)logOT:(NSString*)connectionId{
     NSURL *url = [NSURL URLWithString:@"https://hlg.tokbox.com/prod/logging/ClientEvent"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:10];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -56,13 +56,18 @@
     [payload setObject:@"iOS" forKey:@"platform"];
     [payload setObject:@"3.2.2" forKey:@"cp_version"];
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
-    [logData setObject:@"cp_initialize" forKey:@"action"];
     [logData setObject:apiKey forKey:@"partner_id"];
     [logData setObject:@"2.13.0" forKey:@"build"];
     [logData setObject:@"https://github.com/opentok/cordova-plugin-opentok" forKey:@"source"];
     [logData setObject:@"info" forKey:@"payload_type"];
     [logData setObject:payload forKey:@"payload"];
     [logData setObject:sessionId forKey:@"session_id"];
+    if (connectionId != nil) {
+        [logData setObject:connectionId forKey:@"connectionId"];
+        [logData setObject:@"cp_on_connect" forKey:@"action"];
+    } else {
+        [logData setObject:@"cp_initialize" forKey:@"action"];
+    }
     request.HTTPBody = [NSJSONSerialization dataWithJSONObject:logData options:NSJSONWritingPrettyPrinted error:nil];
 
     [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
@@ -90,7 +95,7 @@
     observersDictionary = [[NSMutableDictionary alloc] init];
 
     // OT log request
-    [self logOT];
+    [self logOT: nil];
     // Return Result
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -497,6 +502,7 @@
 
 #pragma mark Session Delegates
 - (void)sessionDidConnect:(OTSession*)session{
+    [self logOT: session.connection.connectionId];
     NSLog(@"iOS Connected to Session");
 
     NSMutableDictionary* sessionDict = [[NSMutableDictionary alloc] init];
@@ -630,7 +636,7 @@
 - (void)session:(OTSession*)session archiveStartedWithId:(nonnull NSString *)archiveId name:(NSString *_Nullable)name{
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     [data setObject: archiveId forKey: @"id"];
-    [data setObject: name forKey: @"name"];
+    [data setObject: (name == nil) ? @"" : name forKey: @"name"];
     [self triggerJSEvent: @"sessionEvents" withType: @"archiveStarted" withData: data];
 }
 - (void)session:(OTSession*)session archiveStoppedWithId:(nonnull NSString *)archiveId{

@@ -8,14 +8,14 @@
 #import <Foundation/Foundation.h>
 #import <Cordova/CDVPlugin.h>
 #import <UIKit/UIKit.h>
-#import <Opentok/Opentok.h>
+#import <OpenTok/OpenTok.h>
 
 @interface OpenTokPlugin : CDVPlugin <OTSessionDelegate, OTPublisherDelegate, OTSubscriberKitDelegate>
 
 @property(nonatomic, copy) NSString* exceptionId;
 
 // OpenTok Logging
-- (void)logOT;
+- (void)logOT:(NSString*)connectionId;
 
 // Tokbox Library Functions
 - (void)addEvent:(CDVInvokedUrlCommand*)command;
