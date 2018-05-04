@@ -54,7 +54,7 @@
 
     NSMutableDictionary *payload = [[NSMutableDictionary alloc]init];
     [payload setObject:@"iOS" forKey:@"platform"];
-    [payload setObject:@"3.2.2" forKey:@"cp_version"];
+    [payload setObject:@"3.2.3" forKey:@"cp_version"];
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
     [logData setObject:apiKey forKey:@"partner_id"];
     [logData setObject:@"2.13.0" forKey:@"build"];
