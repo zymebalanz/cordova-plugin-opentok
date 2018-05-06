@@ -1,5 +1,5 @@
 //
-//  OTScreenCapture.m
+//  OTScreenCapturer.m
 //  Screen-Sharing
 //
 //  Copyright (c) 2014 TokBox Inc. All rights reserved.
@@ -101,7 +101,7 @@
  * block to execute periodically to send video frames.
  */
 - (void)initCapture {
-    __unsafe_unretained OTScreenCapture* _self = self;
+    __unsafe_unretained OTScreenCapturer* _self = self;
     _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
     
     dispatch_source_set_timer(_timer, dispatch_walltime(NULL, 0),
@@ -284,7 +284,7 @@
     CGSize destContainerSize = CGSizeZero;
     CGRect destRectForSourceImage = CGRectZero;
     
-    [OTScreenCapture dimensionsForInputSize:sourceSize
+    [OTScreenCapturer dimensionsForInputSize:sourceSize
                               containerSize:&destContainerSize
                                    drawRect:&destRectForSourceImage];
     

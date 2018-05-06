@@ -1,5 +1,5 @@
 //
-//  OTScreenCapture.h
+//  OTScreenCapturer.h
 //  Screen-Sharing
 //
 //  Copyright (c) 2014 TokBox Inc. All rights reserved.
@@ -21,7 +21,7 @@
  * Periodically sends video frames to an OpenTok Publisher by rendering the
  * CALayer for a UIView.
  */
-@interface OTScreenCapture : NSObject <OTVideoCapture>
+@interface OTScreenCapturer : NSObject <OTVideoCapture>
 
 @property(readonly) UIView* view;
 
