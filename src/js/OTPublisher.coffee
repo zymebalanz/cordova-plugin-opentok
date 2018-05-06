@@ -53,6 +53,8 @@ class TBPublisher
         audioSource="false"
       if(@properties.videoSource? || @properties.videoSource==false)
         videoSource="false"
+      if(@properties.videoSource? && this.properties.videoSource=="screen")
+        videoSource = "screen";
       insertMode = @properties.insertMode ? insertMode
     if (not width?) or width == 0 or (not height?) or height==0
       width = DefaultWidth

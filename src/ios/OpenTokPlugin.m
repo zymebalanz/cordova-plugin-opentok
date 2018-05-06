@@ -171,6 +171,12 @@
     [_publisher setPublishAudio:bpubAudio];
     [_publisher setPublishVideo:bpubVideo];
     [_publisher setAudioFallbackEnabled:baudioFallbackEnabled];
+    if ([videoTrack isEqualToString:@"screen"]) {
+        [_publisher setVideoType:OTPublisherKitVideoTypeScreen];
+        OTScreenCapture* videoCapture =
+        [[OTScreenCapture alloc] initWithView:self.webView];
+        [_publisher setVideoCapture:videoCapture];
+    }
     [self.webView.scrollView addSubview:_publisher.view];
     [_publisher.view setFrame:CGRectMake(left, top, width, height)];
 

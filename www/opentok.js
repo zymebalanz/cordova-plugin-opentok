@@ -370,6 +370,9 @@ TBPublisher = (function() {
       if ((this.properties.videoSource != null) || this.properties.videoSource === false) {
         videoSource = "false";
       }
+      if ((this.properties.videoSource != null) && this.properties.videoSource === "screen") {
+        videoSource = "screen";
+      }
       insertMode = (_ref10 = this.properties.insertMode) != null ? _ref10 : insertMode;
     }
     if ((width == null) || width === 0 || (height == null) || height === 0) {

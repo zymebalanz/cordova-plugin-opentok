@@ -192,6 +192,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             String frameRate = "FPS_30";
             String resolution = "MEDIUM";
             String cameraName = "front";
+            String videoSource = "video";
             try {
                 publisherName = this.mProperty.getString(0);
                 audioBitrate = this.mProperty.getInt(12);
@@ -202,6 +203,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 publishVideo = this.mProperty.getString(7).equals("true");
                 publishAudio = this.mProperty.getString(6).equals("true");
                 cameraName = this.mProperty.getString(8).equals("back") ? "back" : cameraName;
+                videoSource = this.mProperty.getString(14);
                 if (compareStrings(this.mProperty.getString(16), "1280x720")) {
                     resolution = "HIGH";
                 }
@@ -212,7 +214,19 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             } catch (Exception e) {
                 Log.i(TAG, "Unable to set publisher properties");
             }
-            mPublisher = new Publisher.Builder(cordova.getActivity().getApplicationContext())
+            if (videoSource.equals("screen")) {
+                OTScreenCapturer screenCapturer = new OTScreenCapturer(_webView.getView());
+                mPublisher = new Publisher.Builder(cordova.getActivity().getApplicationContext())
+                                    .audioTrack(audioTrack)
+                                    .name(publisherName)
+                                    .audioBitrate(audioBitrate)
+                                    .frameRate(Publisher.CameraCaptureFrameRate.valueOf(frameRate))
+                                    .resolution(Publisher.CameraCaptureResolution.valueOf(resolution))
+                                    .capturer(screenCapturer)
+                                    .build();
+                mPublisher.setPublisherVideoType(PublisherKit.PublisherKitVideoType.PublisherKitVideoTypeScreen);                                    
+            } else {
+                mPublisher = new Publisher.Builder(cordova.getActivity().getApplicationContext())
                     .videoTrack(videoTrack)
                     .audioTrack(audioTrack)
                     .name(publisherName)
@@ -220,6 +234,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     .frameRate(Publisher.CameraCaptureFrameRate.valueOf(frameRate))
                     .resolution(Publisher.CameraCaptureResolution.valueOf(resolution))
                     .build();
+
+                if (cameraName.equals("back")) {
+                    mPublisher.cycleCamera();
+                }
+            }
             mPublisher.setCameraListener(this);
             mPublisher.setPublisherListener(this);
             mPublisher.setAudioLevelListener(this);
@@ -227,10 +246,6 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             mPublisher.setAudioFallbackEnabled(audioFallbackEnabled);
             mPublisher.setPublishVideo(publishVideo);
             mPublisher.setPublishAudio(publishAudio);
-
-            if (cameraName.equals("back")) {
-                mPublisher.cycleCamera();
-            }
         }
 
         public void setPropertyFromArray(JSONArray args) {
