@@ -9,7 +9,7 @@
 #include <mach/mach_time.h>
 #import "OTScreenCapturer.h"
 
-@implementation OTScreenCapture {
+@implementation OTScreenCapturer {
     CMTime _minFrameDuration;
     dispatch_queue_t _queue;
     dispatch_source_t _timer;

@@ -6,6 +6,7 @@
 //
 
 #import "OpenTokPlugin.h"
+#import "OTScreenCapturer.h"
 
 @implementation OpenTokPlugin{
     OTSession* _session;
@@ -173,8 +174,8 @@
     [_publisher setAudioFallbackEnabled:baudioFallbackEnabled];
     if ([videoTrack isEqualToString:@"screen"]) {
         [_publisher setVideoType:OTPublisherKitVideoTypeScreen];
-        OTScreenCapture* videoCapture =
-        [[OTScreenCapture alloc] initWithView:self.webView];
+        OTScreenCapturer* videoCapture =
+        [[OTScreenCapturer alloc] initWithView:self.webView];
         [_publisher setVideoCapture:videoCapture];
     }
     [self.webView.scrollView addSubview:_publisher.view];
