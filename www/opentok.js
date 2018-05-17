@@ -398,7 +398,7 @@ TBPublisher = (function() {
 
   TBPublisher.prototype.streamCreated = function(event) {
     var streamEvent;
-    this.stream = new TBStream(event.stream, this.session.sessionConnection);
+    this.stream = new TBStream(event.stream, this.session.sessionConnected);
     streamEvent = new TBEvent("streamCreated");
     streamEvent.stream = this.stream;
     this.dispatchEvent(streamEvent);
