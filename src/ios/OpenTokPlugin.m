@@ -54,10 +54,10 @@
 
     NSMutableDictionary *payload = [[NSMutableDictionary alloc]init];
     [payload setObject:@"iOS" forKey:@"platform"];
-    [payload setObject:@"3.2.4" forKey:@"cp_version"];
+    [payload setObject:@"3.2.5" forKey:@"cp_version"];
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
     [logData setObject:apiKey forKey:@"partner_id"];
-    [logData setObject:@"2.13.0" forKey:@"build"];
+    [logData setObject:@"2.14.0" forKey:@"build"];
     [logData setObject:@"https://github.com/opentok/cordova-plugin-opentok" forKey:@"source"];
     [logData setObject:@"info" forKey:@"payload_type"];
     [logData setObject:payload forKey:@"payload"];
