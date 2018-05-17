@@ -106,8 +106,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             for (RunnableUpdateViews viewContainer : allStreamViews) {
                 // Set depth location of camera view based on CSS z-index.
                 // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
-                viewContainer.mView.setTranslationZ(viewContainer.getZIndex());
-
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    viewContainer.mView.setTranslationZ(viewContainer.getZIndex());
+                }
                 // If the zIndex is 0(default) bring the view to the top, last one wins.
                 // See: https://github.com/saghul/cordova-plugin-iosrtc/blob/5b6a180b324c8c9bac533fa481a457b74183c740/src/PluginMediaStreamRenderer.swift#L191
                 if(viewContainer.getZIndex() == 0) {
