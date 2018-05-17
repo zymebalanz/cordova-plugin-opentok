@@ -68,7 +68,7 @@ class TBPublisher
   eventReceived: (response) =>
     @[response.eventType](response.data)
   streamCreated: (event) =>
-    @stream = new TBStream( event.stream, @session.sessionConnection )
+    @stream = new TBStream( event.stream, @session.sessionConnected )
     streamEvent = new TBEvent("streamCreated")
     streamEvent.stream = @stream
     @dispatchEvent(streamEvent)
