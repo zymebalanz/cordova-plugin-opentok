@@ -106,8 +106,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             for (RunnableUpdateViews viewContainer : allStreamViews) {
                 // Set depth location of camera view based on CSS z-index.
                 // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
-                viewContainer.mView.setTranslationZ(viewContainer.getZIndex());
-
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    viewContainer.mView.setTranslationZ(viewContainer.getZIndex());
+                }
                 // If the zIndex is 0(default) bring the view to the top, last one wins.
                 // See: https://github.com/saghul/cordova-plugin-iosrtc/blob/5b6a180b324c8c9bac533fa481a457b74183c740/src/PluginMediaStreamRenderer.swift#L191
                 if(viewContainer.getZIndex() == 0) {
@@ -270,7 +271,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
 
                 // Set depth location of camera view based on CSS z-index.
                 // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
-                this.mView.setTranslationZ(this.getZIndex());
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    this.mView.setTranslationZ(this.getZIndex());
+                }
             }
             super.run();
         }
@@ -380,7 +383,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
 
                 // Set depth location of camera view based on CSS z-index.
                 // See: https://developer.android.com/reference/android/view/View.html#setTranslationZ(float)
-                this.mView.setTranslationZ(this.getZIndex());
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    this.mView.setTranslationZ(this.getZIndex());
+                }
                 Log.i(TAG, "subscriber view is added to parent view!");
             }
             super.run();
@@ -550,12 +555,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
 
             // publisher methods
         } else if (action.equals("setCameraPosition")) {
-            String cameraId = args.getString(0);
-            if (cameraId.equals("front")) {
-                myPublisher.mPublisher.setCameraId(1);
-            } else if (cameraId.equals("back")) {
-                myPublisher.mPublisher.setCameraId(0);
-            }
+            myPublisher.mPublisher.cycleCamera();
         } else if (action.equals("publishAudio")) {
             String val = args.getString(0);
             boolean publishAudio = true;
