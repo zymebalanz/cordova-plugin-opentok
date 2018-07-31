@@ -191,7 +191,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             boolean publishVideo = true;
             int audioBitrate = 40000;
             String publisherName = "Android-Cordova-Publisher";
-            String frameRate = "FPS_30";
+            String frameRate = "FPS_15";
             String resolution = "MEDIUM";
             String cameraName = "front";
             try {
