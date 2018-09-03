@@ -4,7 +4,7 @@
 #     stream (Stream) - stream to which you are subscribing
 #   Methods: 
 #     getAudioVolume()
-#     getImgData() : String
+#     getImgData(successCallback, errorCallback)
 #     getStyle() : Objects
 #     off( type, listener ) : objects
 #     on( type, listener ) : objects

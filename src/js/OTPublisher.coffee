@@ -6,7 +6,7 @@
 #     replaceElementId (String) — The ID of the DOM element that was replaced when the Publisher video stream was inserted.
 #   Methods: 
 #     destroy():Publisher - not yet implemented
-#     getImgData() : String - not yet implemented
+#     getImgData(successCallback, errorCallback)
 #     getStyle() : Object - not yet implemented
 #     off( type, listener )
 #     on( type, listener )
