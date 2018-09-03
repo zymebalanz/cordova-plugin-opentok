@@ -88,8 +88,9 @@ class TBPublisher
   destroy: ->
     if(@pubElement)
       Cordova.exec( @removePublisherElement, TBError, OTPlugin, "destroyPublisher", [])
-  getImgData: ->
-    return ""
+  getImgData: (successCallback, errorCallback) ->
+    Cordova.exec(successCallback, errorCallback || TBError, OTPlugin, "getImgData", [PublisherStreamId]);
+    return @
   getStyle: ->
     return {}
   publishAudio: (state) ->

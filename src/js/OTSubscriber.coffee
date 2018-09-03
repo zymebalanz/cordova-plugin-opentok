@@ -15,8 +15,9 @@
 class TBSubscriber
   getAudioVolume: ->
     return 0
-  getImgData: ->
-    return ""
+  getImgData: (successCallback, errorCallback) ->
+    Cordova.exec(successCallback, errorCallback || TBError, OTPlugin, "getImgData", [this.streamId]);
+    return @
   getStyle: ->
     return {}
   setAudioVolume:(value) ->
