@@ -425,8 +425,15 @@ TBPublisher = (function() {
     }
   };
 
-  TBPublisher.prototype.getImgData = function(successCallback, errorCallback) {
-    Cordova.exec(successCallback, errorCallback || TBError, OTPlugin, "getImgData", [PublisherStreamId]);
+  TBPublisher.prototype.getImgData = function(callback) {
+    var errorCb, successCb;
+    errorCb = function(error) {
+      return callback(error);
+    };
+    successCb = function(img) {
+      return callback(null, img);
+    };
+    Cordova.exec(successCb, errorCb, OTPlugin, "getImgData", [PublisherStreamId]);
     return this;
   };
 
@@ -939,8 +946,15 @@ TBSubscriber = (function() {
     return 0;
   };
 
-  TBSubscriber.prototype.getImgData = function(successCallback, errorCallback) {
-    Cordova.exec(successCallback, errorCallback || TBError, OTPlugin, "getImgData", [this.streamId]);
+  TBSubscriber.prototype.getImgData = function(callback) {
+    var errorCb, successCb;
+    errorCb = function(error) {
+      return callback(error);
+    };
+    successCb = function(img) {
+      return callback(null, img);
+    };
+    Cordova.exec(successCb, errorCb, OTPlugin, "getImgData", [this.streamId]);
     return this;
   };
 

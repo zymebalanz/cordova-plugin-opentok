@@ -4,7 +4,7 @@
 #     stream (Stream) - stream to which you are subscribing
 #   Methods: 
 #     getAudioVolume()
-#     getImgData(successCallback, errorCallback)
+#     getImgData(callback)
 #     getStyle() : Objects
 #     off( type, listener ) : objects
 #     on( type, listener ) : objects
@@ -15,8 +15,10 @@
 class TBSubscriber
   getAudioVolume: ->
     return 0
-  getImgData: (successCallback, errorCallback) ->
-    Cordova.exec(successCallback, errorCallback || TBError, OTPlugin, "getImgData", [this.streamId]);
+  getImgData: (callback) ->
+    errorCb = (error) -> callback(error)
+    successCb = (img) -> callback(null, img)
+    Cordova.exec(successCb, errorCb, OTPlugin, "getImgData", [this.streamId]);
     return @
   getStyle: ->
     return {}
