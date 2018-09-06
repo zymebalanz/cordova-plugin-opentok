@@ -6,7 +6,7 @@
 #     replaceElementId (String) — The ID of the DOM element that was replaced when the Publisher video stream was inserted.
 #   Methods: 
 #     destroy():Publisher - not yet implemented
-#     getImgData() : String - not yet implemented
+#     getImgData(callback)
 #     getStyle() : Object - not yet implemented
 #     off( type, listener )
 #     on( type, listener )
@@ -88,8 +88,11 @@ class TBPublisher
   destroy: ->
     if(@pubElement)
       Cordova.exec( @removePublisherElement, TBError, OTPlugin, "destroyPublisher", [])
-  getImgData: ->
-    return ""
+  getImgData: (callback) ->
+    errorCb = (error) -> callback(error)
+    successCb = (img) -> callback(null, img)
+    Cordova.exec(successCb, errorCb, OTPlugin, "getImgData", [PublisherStreamId]);
+    return @
   getStyle: ->
     return {}
   publishAudio: (state) ->

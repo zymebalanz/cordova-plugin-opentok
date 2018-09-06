@@ -425,8 +425,16 @@ TBPublisher = (function() {
     }
   };
 
-  TBPublisher.prototype.getImgData = function() {
-    return "";
+  TBPublisher.prototype.getImgData = function(callback) {
+    var errorCb, successCb;
+    errorCb = function(error) {
+      return callback(error);
+    };
+    successCb = function(img) {
+      return callback(null, img);
+    };
+    Cordova.exec(successCb, errorCb, OTPlugin, "getImgData", [PublisherStreamId]);
+    return this;
   };
 
   TBPublisher.prototype.getStyle = function() {
@@ -938,8 +946,16 @@ TBSubscriber = (function() {
     return 0;
   };
 
-  TBSubscriber.prototype.getImgData = function() {
-    return "";
+  TBSubscriber.prototype.getImgData = function(callback) {
+    var errorCb, successCb;
+    errorCb = function(error) {
+      return callback(error);
+    };
+    successCb = function(img) {
+      return callback(null, img);
+    };
+    Cordova.exec(successCb, errorCb, OTPlugin, "getImgData", [this.streamId]);
+    return this;
   };
 
   TBSubscriber.prototype.getStyle = function() {
