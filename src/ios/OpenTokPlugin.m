@@ -168,6 +168,8 @@
 
     // Publish and set View
     _publisher = [[OTPublisher alloc] initWithDelegate:self settings:_publisherSettings];
+    _publisher.networkStatsDelegate = self;
+    _publisher.audioLevelDelegate = self;
     [_publisher setPublishAudio:bpubAudio];
     [_publisher setPublishVideo:bpubVideo];
     [_publisher setAudioFallbackEnabled:baudioFallbackEnabled];
@@ -386,6 +388,8 @@
     // Acquire Stream, then create a subscriber object and put it into dictionary
     OTStream* myStream = [streamDictionary objectForKey:sid];
     OTSubscriber* sub = [[OTSubscriber alloc] initWithStream:myStream delegate:self];
+    sub.audioLevelDelegate = self;
+    sub.networkStatsDelegate = self;
     [_session subscribe:sub error:nil];
 
     if ([[command.arguments objectAtIndex:6] isEqualToString:@"false"]) {
