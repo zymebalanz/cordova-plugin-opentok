@@ -11,8 +11,7 @@
 #import <OpenTok/OpenTok.h>
 #import "UIView+Category.h"
 
-@interface OpenTokPlugin : CDVPlugin <OTSessionDelegate, OTPublisherDelegate, OTSubscriberKitDelegate>
-
+@interface OpenTokPlugin : CDVPlugin <OTSessionDelegate, OTPublisherDelegate, OTPublisherKitAudioLevelDelegate, OTPublisherKitNetworkStatsDelegate, OTSubscriberKitDelegate, OTSubscriberKitAudioLevelDelegate, OTSubscriberKitNetworkStatsDelegate>
 @property(nonatomic, copy) NSString* exceptionId;
 
 // OpenTok Logging
