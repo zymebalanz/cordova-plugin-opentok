@@ -120,6 +120,7 @@ class TBSubscriber
   audioLevelUpdated: (event) =>
     streamEvent = new TBEvent("audioLevelUpdated")
     streamEvent.audioLevel = event.audioLevel
+    @dispatchEvent(streamEvent)
     return @
 
   # deprecating
