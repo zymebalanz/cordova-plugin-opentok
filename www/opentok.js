@@ -1063,6 +1063,7 @@ TBSubscriber = (function() {
     OT.getHelper().eventing(this);
     Cordova.exec(TBSuccess, TBError, OTPlugin, "subscribe", [stream.streamId, position.top, position.left, width, height, zIndex, subscribeToAudio, subscribeToVideo, ratios.widthRatio, ratios.heightRatio]);
     Cordova.exec(this.eventReceived, TBSuccess, OTPlugin, "addEvent", ["subscriberEvents"]);
+    OT.updateViews();
   }
 
   TBSubscriber.prototype.eventReceived = function(response) {
