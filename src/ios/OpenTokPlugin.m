@@ -342,8 +342,21 @@
     NSLog(@"iOS Connecting to Session");
 
     // Get Parameters
+    OTError *error = nil;
     NSString* tbToken = [command.arguments objectAtIndex:0];
-    [_session connectWithToken:tbToken error:nil];
+    [_session connectWithToken:tbToken error:&error];
+    CDVPluginResult* pluginResult;
+    if (error) {
+        NSNumber* code = [NSNumber numberWithInt:[error code]];
+        NSMutableDictionary* err = [[NSMutableDictionary alloc] init];
+        [err setObject:error.localizedDescription forKey:@"message"];
+        [err setObject:code forKey:@"code"];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:err];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
 }
 
 // Called by session.disconnect()

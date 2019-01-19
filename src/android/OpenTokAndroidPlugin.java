@@ -591,6 +591,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         } else if (action.equals("connect")) {
             Log.i(TAG, "connect command called");
             mSession.connect(args.getString(0));
+            callbackContext.success();
         } else if (action.equals("disconnect")) {
             mSession.disconnect();
         } else if (action.equals("publish")) {

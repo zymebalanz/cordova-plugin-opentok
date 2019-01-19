@@ -540,16 +540,22 @@ var TBSession,
 
 TBSession = (function() {
   TBSession.prototype.connect = function(token, connectCompletionCallback) {
+    var errorCallback, successCallback;
     this.token = token;
     if (typeof connectCompletionCallback !== "function" && (connectCompletionCallback != null)) {
       TB.showError("Session.connect() takes a token and an optional completionHandler");
       return;
     }
     if ((connectCompletionCallback != null)) {
-      this.on('sessionConnected', connectCompletionCallback);
+      errorCallback = function(error) {
+        return connectCompletionCallback(error);
+      };
+      successCallback = function() {
+        return connectCompletionCallback(null);
+      };
     }
     Cordova.exec(this.eventReceived, TBError, OTPlugin, "addEvent", ["sessionEvents"]);
-    Cordova.exec(TBSuccess, TBError, OTPlugin, "connect", [this.token]);
+    Cordova.exec(successCallback, errorCallback, OTPlugin, "connect", [this.token]);
   };
 
   TBSession.prototype.disconnect = function() {
