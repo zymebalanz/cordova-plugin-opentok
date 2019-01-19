@@ -679,12 +679,12 @@
 
     NSLog(@"iOS Session Received signal from Connection: %@ with id %@", connection, [connection connectionId]);
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
-    [data setObject: type forKey: @"type"];
-    [data setObject: string forKey: @"data"];
+    [data setObject: (type == nil) ? @ "" : type forKey: @"type"];
+    [data setObject: (string == nil) ? @"" : string forKey: @"data"];
     if (connection.connectionId) {
         [data setObject: connection.connectionId forKey: @"connectionId"];
-        [self triggerJSEvent: @"sessionEvents" withType: @"signalReceived" withData: data];
     }
+    [self triggerJSEvent: @"sessionEvents" withType: @"signalReceived" withData: data];
 }
 - (void)session:(OTSession*)session archiveStartedWithId:(nonnull NSString *)archiveId name:(NSString *_Nullable)name{
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
