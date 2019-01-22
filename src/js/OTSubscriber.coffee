@@ -82,7 +82,7 @@ class TBSubscriber
     OT.getHelper().eventing(@)
     Cordova.exec(TBSuccess, TBError, OTPlugin, "subscribe", [stream.streamId, position.top, position.left, width, height, zIndex, subscribeToAudio, subscribeToVideo, ratios.widthRatio, ratios.heightRatio] )
     Cordova.exec(@eventReceived, TBSuccess, OTPlugin, "addEvent", ["subscriberEvents"] )
-
+    OT.updateViews()
   eventReceived: (response) =>
     @[response.eventType](response.data)
   connected: (event) =>

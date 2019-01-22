@@ -591,6 +591,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         } else if (action.equals("connect")) {
             Log.i(TAG, "connect command called");
             mSession.connect(args.getString(0));
+            callbackContext.success();
         } else if (action.equals("disconnect")) {
             mSession.disconnect();
         } else if (action.equals("publish")) {
@@ -988,7 +989,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     params.put("partner_id", apiKey);
                     params.put("payload", payload.toString());
                     params.put("source", "https://github.com/opentok/cordova-plugin-opentok");
-                    params.put("build", "2.15.2");
+                    params.put("build", "2.15.3");
                     params.put("session_id", sessionId);
                     if (connectionId != null) {
                         params.put("action", "cp_on_connect");

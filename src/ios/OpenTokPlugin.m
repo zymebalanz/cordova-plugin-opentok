@@ -57,7 +57,7 @@
     [payload setObject:@"3.4.2" forKey:@"cp_version"];
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
     [logData setObject:apiKey forKey:@"partner_id"];
-    [logData setObject:@"2.15.2" forKey:@"build"];
+    [logData setObject:@"2.15.3" forKey:@"build"];
     [logData setObject:@"https://github.com/opentok/cordova-plugin-opentok" forKey:@"source"];
     [logData setObject:@"info" forKey:@"payload_type"];
     [logData setObject:payload forKey:@"payload"];
@@ -342,8 +342,21 @@
     NSLog(@"iOS Connecting to Session");
 
     // Get Parameters
+    OTError *error = nil;
     NSString* tbToken = [command.arguments objectAtIndex:0];
-    [_session connectWithToken:tbToken error:nil];
+    [_session connectWithToken:tbToken error:&error];
+    CDVPluginResult* pluginResult;
+    if (error) {
+        NSNumber* code = [NSNumber numberWithInt:[error code]];
+        NSMutableDictionary* err = [[NSMutableDictionary alloc] init];
+        [err setObject:error.localizedDescription forKey:@"message"];
+        [err setObject:code forKey:@"code"];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:err];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
 }
 
 // Called by session.disconnect()
@@ -666,12 +679,12 @@
 
     NSLog(@"iOS Session Received signal from Connection: %@ with id %@", connection, [connection connectionId]);
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
-    [data setObject: type forKey: @"type"];
-    [data setObject: string forKey: @"data"];
+    [data setObject: (type == nil) ? @ "" : type forKey: @"type"];
+    [data setObject: (string == nil) ? @"" : string forKey: @"data"];
     if (connection.connectionId) {
         [data setObject: connection.connectionId forKey: @"connectionId"];
-        [self triggerJSEvent: @"sessionEvents" withType: @"signalReceived" withData: data];
     }
+    [self triggerJSEvent: @"sessionEvents" withType: @"signalReceived" withData: data];
 }
 - (void)session:(OTSession*)session archiveStartedWithId:(nonnull NSString *)archiveId name:(NSString *_Nullable)name{
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
