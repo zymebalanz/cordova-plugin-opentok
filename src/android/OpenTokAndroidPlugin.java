@@ -19,7 +19,6 @@ import android.Manifest;
 import android.os.Build;
 import android.content.pm.PackageManager;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -710,14 +709,6 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         }
     }
 
-    public void alertUser(String message) {
-        // 1. Instantiate an AlertDialog.Builder with its constructor
-        AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
-        builder.setMessage(message).setTitle("TokBox Message");
-        AlertDialog dialog = builder.create();
-    }
-
-
     // sessionListener
     @Override
     public void onConnected(Session arg0) {
@@ -815,9 +806,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
 
     @Override
     public void onError(Session arg0, OpentokError arg1) {
-        // TODO Auto-generated method stub
         Log.e(TAG, "session exception: " + arg1.getMessage());
-        alertUser("session error " + arg1.getMessage());
+        JSONObject data = new JSONObject();
+        try {
+            data.put("message", arg1.getMessage());
+            data.put("code", arg1.getErrorCode());
+        } catch (JSONException e) {
+        }
+        triggerJSEvent("sessionEvents", "error", data);
     }
 
     // connectionListener

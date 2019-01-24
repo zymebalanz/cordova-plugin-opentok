@@ -644,11 +644,8 @@
     [err setObject:error.localizedDescription forKey:@"message"];
     [err setObject:code forKey:@"code"];
 
-    if (self.exceptionId) {
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: err];
-        [pluginResult setKeepCallbackAsBool:YES];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.exceptionId];
-    }
+    [self triggerJSEvent: @"sessionEvents" withType: @"error" withData: err];
+    
 }
 - (void)sessionDidDisconnect:(OTSession*)session{
     NSString* alertMessage = [NSString stringWithFormat:@"Session disconnected: (%@)", session.sessionId];

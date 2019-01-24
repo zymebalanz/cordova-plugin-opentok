@@ -277,6 +277,12 @@ class TBSession
     streamEvent.id = event.id
     @dispatchEvent(streamEvent)
     return @
+  error: (event) ->
+    errorEvent = new TBEvent("error")
+    errorEvent.message = event.message
+    errorEvent.code = event.code
+    @dispatchEvent(errorEvent)
+    return @
 
 
   # deprecating
